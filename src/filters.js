@@ -173,13 +173,13 @@ export function doSearch() {
 
 // ==================== フィルタの既定値管理 ====================
 const FILTER_DEFAULTS_KEY = 'filter-defaults-v1';
+export const FILTER_SECTIONS = ['type', 'q', 'targets', 'lv', 'attrs', 'tribes', 'range'];
+export const TARGET_IDS = ['name', 'id', 'cost', 'effect', 'json'];
 const BUILTIN_FILTER_DEFAULTS = {
-  type: 'tama', q: '', targets: ['name', 'effect'], lv: '',
+  type: 'all', q: '', targets: TARGET_IDS.filter(t => t !== 'json'), lv: '',
   attrs: { list: [], dark: true }, tribes: [],
   range: { dex: true, spawn: true, npc: false },
 };
-export const FILTER_SECTIONS = ['type', 'q', 'targets', 'lv', 'attrs', 'tribes', 'range'];
-export const TARGET_IDS = ['name', 'id', 'cost', 'effect', 'json'];
 
 export let FILTER_DEFAULTS = (() => {
   let saved = {};
@@ -213,7 +213,6 @@ function applySection(sec, value, silent) {
     case 'type': setType(value, true); break;
     case 'q':
       document.getElementById('q').value = value;
-      document.dispatchEvent(new CustomEvent('kw-value-changed'));
       break;
     case 'targets':
       TARGET_IDS.forEach(t => { document.getElementById('target-' + t).checked = value.includes(t); });
@@ -259,7 +258,7 @@ export function saveSectionDefault(sec) {
   FILTER_DEFAULTS[sec] = readSection(sec);
   localStorage.setItem(FILTER_DEFAULTS_KEY, JSON.stringify(FILTER_DEFAULTS));
   updateFilterResetButtons();
-  deckToast('「' + (SECTION_LABELS[sec] || sec) + '」を既定値として保存しました');
+  deckToast('「' + (SECTION_LABELS[sec] || sec) + '」を既定値として保存しました', 'info');
 }
 
 const SECTION_LABELS = {
@@ -272,15 +271,34 @@ export function updateFilterResetButtons() {
   FILTER_SECTIONS.forEach(sec => {
     const isDef = sectionIsDefault(sec);
     if (!isDef) allDefault = false;
-    document.querySelectorAll('.sec-reset[data-sec="' + sec + '"]').forEach(btn => { btn.disabled = isDef; });
+    document.querySelectorAll(
+      '.sec-reset[data-sec="' + sec + '"], .sec-save[data-sec="' + sec + '"], .header-sec-reset[data-sec="' + sec + '"]'
+    ).forEach(btn => { btn.classList.toggle('hidden', isDef); });
   });
   const allBtn = document.getElementById('reset-all-btn');
-  if (allBtn) allBtn.disabled = allDefault;
+  if (allBtn) allBtn.classList.toggle('hidden', allDefault);
+}
+
+// ヘッダーに、変更があるセクションだけ一目でわかる個別の「戻す」ボタンを生成する。
+// サイドバーの sec-reset と同じ resetSection(sec) を呼ぶ(表示/非表示の制御も共通)。
+function buildHeaderSectionResets() {
+  const wrap = document.getElementById('header-sec-resets');
+  FILTER_SECTIONS.forEach(sec => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'header-sec-reset hidden bg-indigo-700 hover:bg-indigo-600 px-2.5 py-0.5 rounded-full text-xs font-semibold';
+    btn.dataset.sec = sec;
+    btn.title = (SECTION_LABELS[sec] || sec) + 'を既定値に戻す';
+    btn.textContent = '↺ ' + (SECTION_LABELS[sec] || sec);
+    btn.addEventListener('click', () => resetSection(sec));
+    wrap.appendChild(btn);
+  });
 }
 
 // init() / wireFilterEvents() から呼ばれる、フィルタUI関連のイベント登録。
 export function wireFilterEvents() {
   const $ = id => document.getElementById(id);
+  buildHeaderSectionResets();
   $('reset-all-btn').addEventListener('click', resetAllFilters);
   document.querySelectorAll('.sec-reset[data-sec]').forEach(b =>
     b.addEventListener('click', () => resetSection(b.dataset.sec)));

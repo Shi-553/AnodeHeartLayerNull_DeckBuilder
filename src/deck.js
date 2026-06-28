@@ -316,10 +316,7 @@ function relaxFiltersFor(e) {
     const targets = TARGET_IDS.filter(t => document.getElementById('target-' + t).checked);
     const ql = q.toLowerCase();
     const match = targets.some(t => SEARCH_FIELD_FN[t] && SEARCH_FIELD_FN[t](e).toLowerCase().includes(ql));
-    if (!match) {
-      document.getElementById('q').value = '';
-      document.dispatchEvent(new CustomEvent('kw-value-changed'));
-    }
+    if (!match) document.getElementById('q').value = '';
   }
 }
 

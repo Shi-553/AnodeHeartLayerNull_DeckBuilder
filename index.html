@@ -11,8 +11,9 @@
 
 <header class="sticky top-0 z-20 bg-indigo-900 text-white px-5 py-2 shadow flex items-center gap-4">
   <span class="font-bold text-base tracking-wide">🃏 Anode Heart Layer Null デッキ編集</span>
+  <div id="header-sec-resets" class="ml-auto flex items-center gap-1.5"></div>
   <button id="reset-all-btn" type="button" title="すべてのフィルタを既定値に戻す (Esc)"
-    class="ml-auto bg-indigo-700 hover:bg-indigo-600 disabled:opacity-40 disabled:cursor-default px-2.5 py-0.5 rounded-full text-xs font-semibold" disabled>↺ すべて戻す</button>
+    class="hidden bg-indigo-700 hover:bg-indigo-600 px-2.5 py-0.5 rounded-full text-xs font-semibold">↺ すべて戻す</button>
   <button id="shortcut-btn" type="button" title="ショートカット一覧 (?)"
     class="bg-indigo-700 hover:bg-indigo-600 px-2.5 py-0.5 rounded-full text-xs font-semibold">⌨ ショートカット</button>
   <span id="count-badge" class="bg-indigo-700 px-3 py-0.5 rounded-full text-xs font-semibold"></span>
@@ -27,8 +28,8 @@
     <div>
       <div class="flex items-center mb-1.5 gap-1">
         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">カードタイプ</p>
-        <button class="sec-reset ml-auto text-gray-500 hover:text-indigo-300 disabled:opacity-30 disabled:hover:text-gray-500 text-xs leading-none px-1" data-sec="type" title="このセクションを既定値に戻す" disabled>↺</button>
-        <button class="sec-save text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="type" title="現在の状態を既定値として保存">💾</button>
+        <button class="sec-reset hidden ml-auto text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="type" title="このセクションを既定値に戻す">↺</button>
+        <button class="sec-save hidden text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="type" title="現在の状態を既定値として保存">💾</button>
       </div>
       <div class="flex flex-col gap-1">
         <button id="btn-all"
@@ -50,15 +51,13 @@
     <div>
       <div class="flex items-center mb-1.5 gap-1">
         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">キーワード</p>
-        <button class="sec-reset ml-auto text-gray-500 hover:text-indigo-300 disabled:opacity-30 disabled:hover:text-gray-500 text-xs leading-none px-1" data-sec="q" title="このセクションを既定値に戻す" disabled>↺</button>
-        <button class="sec-save text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="q" title="現在の状態を既定値として保存">💾</button>
+        <button class="sec-reset hidden ml-auto text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="q" title="このセクションを既定値に戻す">↺</button>
+        <button class="sec-save hidden text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="q" title="現在の状態を既定値として保存">💾</button>
       </div>
       <div class="relative">
         <input id="q" type="search" placeholder="名前・効果テキスト…" autocomplete="off"
-          class="w-full border border-gray-600 rounded-md pl-2.5 pr-12 py-1.5 text-sm bg-gray-700 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+          class="w-full border border-gray-600 rounded-md pl-2.5 pr-7 py-1.5 text-sm bg-gray-700 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400">
         <div class="absolute right-1 inset-y-0 flex items-center gap-0.5">
-          <button id="kw-clear" type="button" title="クリア"
-            class="hidden text-gray-400 hover:text-gray-100 w-5 h-5 flex items-center justify-center rounded leading-none">×</button>
           <button id="kw-history-btn" type="button" title="検索履歴"
             class="text-gray-400 hover:text-gray-100 w-5 h-5 flex items-center justify-center rounded text-xs">🕘</button>
         </div>
@@ -66,8 +65,8 @@
       </div>
       <div class="flex items-center mt-2.5 mb-1 gap-1">
         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">検索対象</p>
-        <button class="sec-reset ml-auto text-gray-500 hover:text-indigo-300 disabled:opacity-30 disabled:hover:text-gray-500 text-xs leading-none px-1" data-sec="targets" title="このセクションを既定値に戻す" disabled>↺</button>
-        <button class="sec-save text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="targets" title="現在の状態を既定値として保存">💾</button>
+        <button class="sec-reset hidden ml-auto text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="targets" title="このセクションを既定値に戻す">↺</button>
+        <button class="sec-save hidden text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="targets" title="現在の状態を既定値として保存">💾</button>
       </div>
       <div class="grid grid-cols-2 gap-y-1 gap-x-2">
         <label class="flex items-center gap-1.5 cursor-pointer select-none">
@@ -97,8 +96,8 @@
     <div id="lv-section">
       <div class="flex items-center mb-1.5 gap-1">
         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">レベル</p>
-        <button class="sec-reset ml-auto text-gray-500 hover:text-indigo-300 disabled:opacity-30 disabled:hover:text-gray-500 text-xs leading-none px-1" data-sec="lv" title="このセクションを既定値に戻す" disabled>↺</button>
-        <button class="sec-save text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="lv" title="現在の状態を既定値として保存">💾</button>
+        <button class="sec-reset hidden ml-auto text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="lv" title="このセクションを既定値に戻す">↺</button>
+        <button class="sec-save hidden text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="lv" title="現在の状態を既定値として保存">💾</button>
       </div>
       <div class="flex gap-1">
         <button id="lv-all" class="flex-1 py-1 rounded text-xs font-semibold bg-indigo-600 text-white transition">全</button>
@@ -114,8 +113,8 @@
     <div>
       <div class="flex items-center mb-1.5 gap-1">
         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">属性</p>
-        <button class="sec-reset ml-auto text-gray-500 hover:text-indigo-300 disabled:opacity-30 disabled:hover:text-gray-500 text-xs leading-none px-1" data-sec="attrs" title="このセクションを既定値に戻す" disabled>↺</button>
-        <button class="sec-save text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="attrs" title="現在の状態を既定値として保存">💾</button>
+        <button class="sec-reset hidden ml-auto text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="attrs" title="このセクションを既定値に戻す">↺</button>
+        <button class="sec-save hidden text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="attrs" title="現在の状態を既定値として保存">💾</button>
       </div>
       <div class="border border-gray-600 rounded-md bg-gray-700 p-1">
         <div id="attr-list" class="flex flex-col gap-0.5"></div>
@@ -130,8 +129,8 @@
     <div>
       <div class="flex items-center mb-1.5 gap-1">
         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">種族 (Class)</p>
-        <button class="sec-reset ml-auto text-gray-500 hover:text-indigo-300 disabled:opacity-30 disabled:hover:text-gray-500 text-xs leading-none px-1" data-sec="tribes" title="このセクションを既定値に戻す" disabled>↺</button>
-        <button class="sec-save text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="tribes" title="現在の状態を既定値として保存">💾</button>
+        <button class="sec-reset hidden ml-auto text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="tribes" title="このセクションを既定値に戻す">↺</button>
+        <button class="sec-save hidden text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="tribes" title="現在の状態を既定値として保存">💾</button>
       </div>
       <div class="border border-gray-600 rounded-md bg-gray-700 p-1.5">
         <div id="tribe-list" class="flex flex-wrap gap-1.5"></div>
@@ -142,8 +141,8 @@
     <div class="border-t border-gray-700 pt-3">
       <div class="flex items-center mb-1.5 gap-1">
         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">カード範囲</p>
-        <button class="sec-reset ml-auto text-gray-500 hover:text-indigo-300 disabled:opacity-30 disabled:hover:text-gray-500 text-xs leading-none px-1" data-sec="range" title="このセクションを既定値に戻す" disabled>↺</button>
-        <button class="sec-save text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="range" title="現在の状態を既定値として保存">💾</button>
+        <button class="sec-reset hidden ml-auto text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="range" title="このセクションを既定値に戻す">↺</button>
+        <button class="sec-save hidden text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="range" title="現在の状態を既定値として保存">💾</button>
       </div>
       <div class="flex flex-col gap-1.5">
         <label class="flex items-center gap-2 cursor-pointer select-none">

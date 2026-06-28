@@ -5,21 +5,8 @@ import { doSearch } from './filters.js';
 let kwHistory = [];
 try { kwHistory = JSON.parse(localStorage.getItem('kw-history') || '[]'); } catch (e) { kwHistory = []; }
 
-export function updateKwClearBtn() {
-  document.getElementById('kw-clear').classList.toggle('hidden', !document.getElementById('q').value);
-}
-
 function onKwInput() {
-  updateKwClearBtn();
   debounce(doSearch);
-}
-
-export function clearKw() {
-  const input = document.getElementById('q');
-  input.value = '';
-  updateKwClearBtn();
-  input.focus();
-  doSearch();
 }
 
 function commitKwHistory() {
@@ -71,7 +58,6 @@ function hideKwHistory() {
 function applyKwHistory(v) {
   const input = document.getElementById('q');
   input.value = v;
-  updateKwClearBtn();
   hideKwHistory();
   commitKwHistory();
   doSearch();
@@ -123,7 +109,6 @@ export function keywordSearchAtCursor() {
   if (!kw) return;
   const input = document.getElementById('q');
   input.value = kw;
-  updateKwClearBtn();
   doSearch();
   commitKwHistory();  // 入力欄をフォーカスしないため、blurに頼らず明示的に履歴へ反映する
 }
@@ -134,7 +119,6 @@ export function wireKeywordEvents() {
   $('q').addEventListener('input', onKwInput);
   $('q').addEventListener('keydown', onKwKeydown);
   $('q').addEventListener('blur', commitKwHistory);
-  $('kw-clear').addEventListener('click', clearKw);
   $('kw-history-btn').addEventListener('click', toggleKwHistory);
   document.addEventListener('click', e => {
     const list = $('kw-history-list');
@@ -142,6 +126,4 @@ export function wireKeywordEvents() {
     if (!list.classList.contains('hidden') && !list.contains(e.target) && e.target !== btn) hideKwHistory();
   });
   document.addEventListener('mousemove', e => { _lastMouse.x = e.clientX; _lastMouse.y = e.clientY; }, { passive: true });
-  // フィルタの既定値リセットで検索ボックスの値が変わった時、クリアボタンの表示を同期する。
-  document.addEventListener('kw-value-changed', updateKwClearBtn);
 }
