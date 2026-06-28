@@ -3,17 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Anode Heart - デッキ編集</title>
+<title>Anode Heart Layer Null - デッキ編集</title>
 <link rel="stylesheet" href="tailwind.css">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body class="bg-gray-900 text-sm text-gray-200 h-screen overflow-hidden">
 
 <header class="sticky top-0 z-20 bg-indigo-900 text-white px-5 py-2 shadow flex items-center gap-4">
-  <span class="font-bold text-base tracking-wide">🃏 Anode Heart デッキ編集</span>
-  <button id="reset-all-btn" type="button" onclick="resetAllFilters()" title="すべてのフィルタを既定値に戻す (Esc)"
+  <span class="font-bold text-base tracking-wide">🃏 Anode Heart Layer Null デッキ編集</span>
+  <button id="reset-all-btn" type="button" title="すべてのフィルタを既定値に戻す (Esc)"
     class="ml-auto bg-indigo-700 hover:bg-indigo-600 disabled:opacity-40 disabled:cursor-default px-2.5 py-0.5 rounded-full text-xs font-semibold" disabled>↺ すべて戻す</button>
-  <button id="shortcut-btn" type="button" onclick="openShortcutModal()" title="ショートカット一覧 (?)"
+  <button id="shortcut-btn" type="button" title="ショートカット一覧 (?)"
     class="bg-indigo-700 hover:bg-indigo-600 px-2.5 py-0.5 rounded-full text-xs font-semibold">⌨ ショートカット</button>
   <span id="count-badge" class="bg-indigo-700 px-3 py-0.5 rounded-full text-xs font-semibold"></span>
 </header>
@@ -27,20 +27,20 @@
     <div>
       <div class="flex items-center mb-1.5 gap-1">
         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">カードタイプ</p>
-        <button class="sec-reset ml-auto text-gray-500 hover:text-indigo-300 disabled:opacity-30 disabled:hover:text-gray-500 text-xs leading-none px-1" data-sec="type" onclick="resetSection('type')" title="このセクションを既定値に戻す" disabled>↺</button>
-        <button class="sec-save text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" onclick="saveSectionDefault('type')" title="現在の状態を既定値として保存">💾</button>
+        <button class="sec-reset ml-auto text-gray-500 hover:text-indigo-300 disabled:opacity-30 disabled:hover:text-gray-500 text-xs leading-none px-1" data-sec="type" title="このセクションを既定値に戻す" disabled>↺</button>
+        <button class="sec-save text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="type" title="現在の状態を既定値として保存">💾</button>
       </div>
       <div class="flex flex-col gap-1">
-        <button id="btn-all" onclick="setType('all')"
+        <button id="btn-all"
           class="py-1 rounded text-xs font-bold transition bg-gray-600 text-gray-300">全て</button>
         <div class="grid grid-cols-2 gap-1">
-          <button id="btn-tama"   onclick="setType('tama')"
+          <button id="btn-tama"
             class="py-1 rounded text-xs font-bold transition bg-indigo-600 text-white">タマ</button>
-          <button id="btn-appli"  onclick="setType('appli')"
+          <button id="btn-appli"
             class="py-1 rounded text-xs font-bold transition bg-gray-600 text-gray-300">アプリ</button>
-          <button id="btn-virus"  onclick="setType('virus')"
+          <button id="btn-virus"
             class="py-1 rounded text-xs font-bold transition bg-gray-600 text-gray-300">ウイルス</button>
-          <button id="btn-patch"  onclick="setType('patch')"
+          <button id="btn-patch"
             class="py-1 rounded text-xs font-bold transition bg-gray-600 text-gray-300">パッチ</button>
         </div>
       </div>
@@ -50,44 +50,44 @@
     <div>
       <div class="flex items-center mb-1.5 gap-1">
         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">キーワード</p>
-        <button class="sec-reset ml-auto text-gray-500 hover:text-indigo-300 disabled:opacity-30 disabled:hover:text-gray-500 text-xs leading-none px-1" data-sec="q" onclick="resetSection('q')" title="このセクションを既定値に戻す" disabled>↺</button>
-        <button class="sec-save text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" onclick="saveSectionDefault('q')" title="現在の状態を既定値として保存">💾</button>
+        <button class="sec-reset ml-auto text-gray-500 hover:text-indigo-300 disabled:opacity-30 disabled:hover:text-gray-500 text-xs leading-none px-1" data-sec="q" title="このセクションを既定値に戻す" disabled>↺</button>
+        <button class="sec-save text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="q" title="現在の状態を既定値として保存">💾</button>
       </div>
       <div class="relative">
-        <input id="q" type="search" placeholder="名前・効果テキスト…" oninput="onKwInput()" onkeydown="onKwKeydown(event)" onblur="commitKwHistory()" autocomplete="off"
+        <input id="q" type="search" placeholder="名前・効果テキスト…" autocomplete="off"
           class="w-full border border-gray-600 rounded-md pl-2.5 pr-12 py-1.5 text-sm bg-gray-700 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400">
         <div class="absolute right-1 inset-y-0 flex items-center gap-0.5">
-          <button id="kw-clear" type="button" onclick="clearKw()" title="クリア"
+          <button id="kw-clear" type="button" title="クリア"
             class="hidden text-gray-400 hover:text-gray-100 w-5 h-5 flex items-center justify-center rounded leading-none">×</button>
-          <button id="kw-history-btn" type="button" onclick="toggleKwHistory(event)" title="検索履歴"
+          <button id="kw-history-btn" type="button" title="検索履歴"
             class="text-gray-400 hover:text-gray-100 w-5 h-5 flex items-center justify-center rounded text-xs">🕘</button>
         </div>
         <div id="kw-history-list" class="hidden absolute left-0 right-0 mt-1 bg-gray-700 border border-gray-600 rounded-md shadow-lg z-30 max-h-48 overflow-y-auto"></div>
       </div>
       <div class="flex items-center mt-2.5 mb-1 gap-1">
         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">検索対象</p>
-        <button class="sec-reset ml-auto text-gray-500 hover:text-indigo-300 disabled:opacity-30 disabled:hover:text-gray-500 text-xs leading-none px-1" data-sec="targets" onclick="resetSection('targets')" title="このセクションを既定値に戻す" disabled>↺</button>
-        <button class="sec-save text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" onclick="saveSectionDefault('targets')" title="現在の状態を既定値として保存">💾</button>
+        <button class="sec-reset ml-auto text-gray-500 hover:text-indigo-300 disabled:opacity-30 disabled:hover:text-gray-500 text-xs leading-none px-1" data-sec="targets" title="このセクションを既定値に戻す" disabled>↺</button>
+        <button class="sec-save text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="targets" title="現在の状態を既定値として保存">💾</button>
       </div>
       <div class="grid grid-cols-2 gap-y-1 gap-x-2">
         <label class="flex items-center gap-1.5 cursor-pointer select-none">
-          <input type="checkbox" id="target-name" class="rounded" checked onchange="doSearch()">
+          <input type="checkbox" id="target-name" class="rounded" checked>
           <span class="text-xs text-gray-300">名前</span>
         </label>
         <label class="flex items-center gap-1.5 cursor-pointer select-none">
-          <input type="checkbox" id="target-id" class="rounded" onchange="doSearch()">
+          <input type="checkbox" id="target-id" class="rounded">
           <span class="text-xs text-gray-300">ID</span>
         </label>
         <label class="flex items-center gap-1.5 cursor-pointer select-none">
-          <input type="checkbox" id="target-cost" class="rounded" onchange="doSearch()">
+          <input type="checkbox" id="target-cost" class="rounded">
           <span class="text-xs text-gray-300">コスト</span>
         </label>
         <label class="flex items-center gap-1.5 cursor-pointer select-none">
-          <input type="checkbox" id="target-effect" class="rounded" checked onchange="doSearch()">
+          <input type="checkbox" id="target-effect" class="rounded" checked>
           <span class="text-xs text-gray-300">特性/効果</span>
         </label>
         <label class="flex items-center gap-1.5 cursor-pointer select-none">
-          <input type="checkbox" id="target-json" class="rounded" onchange="doSearch()">
+          <input type="checkbox" id="target-json" class="rounded">
           <span class="text-xs text-gray-300">JSON</span>
         </label>
       </div>
@@ -97,16 +97,16 @@
     <div id="lv-section">
       <div class="flex items-center mb-1.5 gap-1">
         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">レベル</p>
-        <button class="sec-reset ml-auto text-gray-500 hover:text-indigo-300 disabled:opacity-30 disabled:hover:text-gray-500 text-xs leading-none px-1" data-sec="lv" onclick="resetSection('lv')" title="このセクションを既定値に戻す" disabled>↺</button>
-        <button class="sec-save text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" onclick="saveSectionDefault('lv')" title="現在の状態を既定値として保存">💾</button>
+        <button class="sec-reset ml-auto text-gray-500 hover:text-indigo-300 disabled:opacity-30 disabled:hover:text-gray-500 text-xs leading-none px-1" data-sec="lv" title="このセクションを既定値に戻す" disabled>↺</button>
+        <button class="sec-save text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="lv" title="現在の状態を既定値として保存">💾</button>
       </div>
       <div class="flex gap-1">
-        <button onclick="setLv('')"  id="lv-all" class="flex-1 py-1 rounded text-xs font-semibold bg-indigo-600 text-white transition">全</button>
-        <button onclick="setLv('0')" id="lv-0"   class="flex-1 py-1 rounded text-xs font-semibold bg-gray-600 text-gray-300 transition">?</button>
-        <button onclick="setLv('1')" id="lv-1"   class="flex-1 py-1 rounded text-xs font-semibold bg-gray-600 text-gray-300 transition">1</button>
-        <button onclick="setLv('2')" id="lv-2"   class="flex-1 py-1 rounded text-xs font-semibold bg-gray-600 text-gray-300 transition">2</button>
-        <button onclick="setLv('3')" id="lv-3"   class="flex-1 py-1 rounded text-xs font-semibold bg-gray-600 text-gray-300 transition">3</button>
-        <button onclick="setLv('4')" id="lv-4"   class="flex-1 py-1 rounded text-xs font-semibold bg-gray-600 text-gray-300 transition">4</button>
+        <button id="lv-all" class="flex-1 py-1 rounded text-xs font-semibold bg-indigo-600 text-white transition">全</button>
+        <button id="lv-0"   class="flex-1 py-1 rounded text-xs font-semibold bg-gray-600 text-gray-300 transition">?</button>
+        <button id="lv-1"   class="flex-1 py-1 rounded text-xs font-semibold bg-gray-600 text-gray-300 transition">1</button>
+        <button id="lv-2"   class="flex-1 py-1 rounded text-xs font-semibold bg-gray-600 text-gray-300 transition">2</button>
+        <button id="lv-3"   class="flex-1 py-1 rounded text-xs font-semibold bg-gray-600 text-gray-300 transition">3</button>
+        <button id="lv-4"   class="flex-1 py-1 rounded text-xs font-semibold bg-gray-600 text-gray-300 transition">4</button>
       </div>
     </div>
 
@@ -114,14 +114,14 @@
     <div>
       <div class="flex items-center mb-1.5 gap-1">
         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">属性</p>
-        <button class="sec-reset ml-auto text-gray-500 hover:text-indigo-300 disabled:opacity-30 disabled:hover:text-gray-500 text-xs leading-none px-1" data-sec="attrs" onclick="resetSection('attrs')" title="このセクションを既定値に戻す" disabled>↺</button>
-        <button class="sec-save text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" onclick="saveSectionDefault('attrs')" title="現在の状態を既定値として保存">💾</button>
+        <button class="sec-reset ml-auto text-gray-500 hover:text-indigo-300 disabled:opacity-30 disabled:hover:text-gray-500 text-xs leading-none px-1" data-sec="attrs" title="このセクションを既定値に戻す" disabled>↺</button>
+        <button class="sec-save text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="attrs" title="現在の状態を既定値として保存">💾</button>
       </div>
       <div class="border border-gray-600 rounded-md bg-gray-700 p-1">
         <div id="attr-list" class="flex flex-col gap-0.5"></div>
       </div>
       <label class="flex items-center gap-2 mt-1.5 cursor-pointer select-none">
-        <input type="checkbox" id="include-dark" class="rounded" checked onchange="updateAttrHighlight(); doSearch()">
+        <input type="checkbox" id="include-dark" class="rounded" checked>
         <span class="text-xs text-gray-300">対応する闇属性を含む</span>
       </label>
     </div>
@@ -130,8 +130,8 @@
     <div>
       <div class="flex items-center mb-1.5 gap-1">
         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">種族 (Class)</p>
-        <button class="sec-reset ml-auto text-gray-500 hover:text-indigo-300 disabled:opacity-30 disabled:hover:text-gray-500 text-xs leading-none px-1" data-sec="tribes" onclick="resetSection('tribes')" title="このセクションを既定値に戻す" disabled>↺</button>
-        <button class="sec-save text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" onclick="saveSectionDefault('tribes')" title="現在の状態を既定値として保存">💾</button>
+        <button class="sec-reset ml-auto text-gray-500 hover:text-indigo-300 disabled:opacity-30 disabled:hover:text-gray-500 text-xs leading-none px-1" data-sec="tribes" title="このセクションを既定値に戻す" disabled>↺</button>
+        <button class="sec-save text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="tribes" title="現在の状態を既定値として保存">💾</button>
       </div>
       <div class="border border-gray-600 rounded-md bg-gray-700 p-1.5">
         <div id="tribe-list" class="flex flex-wrap gap-1.5"></div>
@@ -142,20 +142,20 @@
     <div class="border-t border-gray-700 pt-3">
       <div class="flex items-center mb-1.5 gap-1">
         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">カード範囲</p>
-        <button class="sec-reset ml-auto text-gray-500 hover:text-indigo-300 disabled:opacity-30 disabled:hover:text-gray-500 text-xs leading-none px-1" data-sec="range" onclick="resetSection('range')" title="このセクションを既定値に戻す" disabled>↺</button>
-        <button class="sec-save text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" onclick="saveSectionDefault('range')" title="現在の状態を既定値として保存">💾</button>
+        <button class="sec-reset ml-auto text-gray-500 hover:text-indigo-300 disabled:opacity-30 disabled:hover:text-gray-500 text-xs leading-none px-1" data-sec="range" title="このセクションを既定値に戻す" disabled>↺</button>
+        <button class="sec-save text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="range" title="現在の状態を既定値として保存">💾</button>
       </div>
       <div class="flex flex-col gap-1.5">
         <label class="flex items-center gap-2 cursor-pointer select-none">
-          <input type="checkbox" id="show-dex" class="rounded" checked onchange="doSearch()">
+          <input type="checkbox" id="show-dex" class="rounded" checked>
           <span class="text-xs text-gray-300">デッキに入れられるカード</span>
         </label>
         <label class="flex items-center gap-2 cursor-pointer select-none">
-          <input type="checkbox" id="show-spawn" class="rounded" checked onchange="doSearch()">
+          <input type="checkbox" id="show-spawn" class="rounded" checked>
           <span class="text-xs text-gray-300">合体・アプリなどで出せるカード</span>
         </label>
         <label class="flex items-center gap-2 cursor-pointer select-none">
-          <input type="checkbox" id="show-npc" class="rounded" onchange="doSearch()">
+          <input type="checkbox" id="show-npc" class="rounded">
           <span class="text-xs text-gray-300">NPC限定カード</span>
         </label>
       </div>
@@ -169,7 +169,7 @@
 
     <!-- デッキ編集ペイン -->
     <div id="deck-pane" class="shrink-0 bg-gray-800 border border-gray-700 rounded-lg flex flex-col">
-      <div id="deck-toggle-bar" class="flex items-center gap-3 px-3 py-1.5 cursor-pointer select-none bg-gray-700 rounded-t-lg" onclick="toggleDeckPane()">
+      <div id="deck-toggle-bar" class="flex items-center gap-3 px-3 py-1.5 cursor-pointer select-none bg-gray-700 rounded-t-lg">
         <span id="deck-caret" class="text-xs">▼</span>
         <span class="font-bold text-sm">🛠 デッキ編集</span>
         <span id="deck-total-badge" class="px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-600">0 / 60</span>
@@ -178,27 +178,26 @@
       </div>
       <div id="deck-body" class="p-3 overflow-auto" style="max-height: 42vh">
         <div class="flex items-center gap-3 mb-3 flex-wrap">
-          <button id="tama-btn" onclick="openTamaPicker()"
+          <button id="tama-btn"
             class="flex items-center gap-2 px-2 py-1 rounded bg-gray-700 hover:bg-gray-600 border border-gray-600">
             <img id="tama-icon" class="hidden" style="width:28px;height:28px;object-fit:contain" onerror="this.classList.add('hidden')">
             <span id="tama-label" class="text-xs">タマDNA: 未選択</span>
           </button>
           <div class="flex items-center gap-1 text-xs">
             <span class="text-gray-400">デッキ名:</span>
-            <span id="deck-name" onclick="editDeckName()"
+            <span id="deck-name"
               class="font-semibold text-gray-100 px-2 py-0.5 rounded hover:bg-gray-700 cursor-text border border-transparent hover:border-gray-600"
               title="クリックで編集"></span>
           </div>
           <label class="flex items-center gap-1.5 text-xs cursor-pointer select-none ml-4"
             title="ONの場合、デッキに入れられないカード(デッキ外・NPC限定)を追加できません">
-            <input type="checkbox" id="deck-restrict-flag" class="rounded"
-              onchange="deck.restrict = this.checked; saveDeck(); syncTableRestrictClass();">
+            <input type="checkbox" id="deck-restrict-flag" class="rounded">
             <span class="text-gray-300">デッキ外カードは追加しない</span>
           </label>
           <div class="ml-auto flex gap-2">
-            <button onclick="importDeck()" class="px-2 py-1 rounded text-xs bg-gray-700 hover:bg-gray-600 border border-gray-600">📥 読込</button>
-            <button onclick="exportDeck()" class="px-2 py-1 rounded text-xs bg-indigo-700 hover:bg-indigo-600 text-white">📤 書出</button>
-            <button onclick="clearDeck()" class="px-2 py-1 rounded text-xs bg-red-900 hover:bg-red-800 text-white" title="全クリア">🗑</button>
+            <button id="deck-import" class="px-2 py-1 rounded text-xs bg-gray-700 hover:bg-gray-600 border border-gray-600">📥 読込</button>
+            <button id="deck-export" class="px-2 py-1 rounded text-xs bg-indigo-700 hover:bg-indigo-600 text-white">📤 書出</button>
+            <button id="deck-clear" class="px-2 py-1 rounded text-xs bg-red-900 hover:bg-red-800 text-white" title="全クリア">🗑</button>
           </div>
         </div>
         <div id="deck-grid" class="flex flex-row flex-wrap gap-2.5 items-center"></div>
@@ -210,11 +209,11 @@
 </div>
 
 <!-- タマDNA選択モーダル -->
-<div id="tama-modal" class="hidden fixed inset-0 z-[10001] bg-black/60 flex items-center justify-center" onclick="closeTamaPicker(event)">
-  <div class="bg-gray-800 border border-gray-600 rounded-lg p-4 w-[40rem] max-w-[90vw] max-h-[80vh] overflow-auto" onclick="event.stopPropagation()">
+<div id="tama-modal" class="hidden fixed inset-0 z-[10001] bg-black/60 flex items-center justify-center">
+  <div class="bg-gray-800 border border-gray-600 rounded-lg p-4 w-[40rem] max-w-[90vw] max-h-[80vh] overflow-auto">
     <div class="flex items-center mb-3">
       <span class="font-bold">タマDNAを選択</span>
-      <button onclick="closeTamaPicker()" class="ml-auto text-gray-400 hover:text-gray-100 text-lg leading-none">×</button>
+      <button id="tama-close" class="ml-auto text-gray-400 hover:text-gray-100 text-lg leading-none">×</button>
     </div>
     <div id="tama-grid" class="grid grid-cols-6 gap-2"></div>
     <!-- ホバー中のタマDNAの説明 (色付き) -->
@@ -226,16 +225,16 @@
 </div>
 
 <!-- ショートカット一覧モーダル -->
-<div id="shortcut-modal" class="hidden fixed inset-0 z-[10001] bg-black/60 flex items-center justify-center" onclick="closeShortcutModal(event)">
-  <div class="bg-gray-800 border border-gray-600 rounded-lg p-4 w-[34rem] max-w-[90vw] max-h-[80vh] overflow-auto" onclick="event.stopPropagation()">
+<div id="shortcut-modal" class="hidden fixed inset-0 z-[10001] bg-black/60 flex items-center justify-center">
+  <div class="bg-gray-800 border border-gray-600 rounded-lg p-4 w-[34rem] max-w-[90vw] max-h-[80vh] overflow-auto">
     <div class="flex items-center mb-3">
       <span class="font-bold">⌨ ショートカット一覧</span>
-      <button onclick="closeShortcutModal()" class="ml-auto text-gray-400 hover:text-gray-100 text-lg leading-none">×</button>
+      <button id="shortcut-close" class="ml-auto text-gray-400 hover:text-gray-100 text-lg leading-none">×</button>
     </div>
     <table id="shortcut-table" class="w-full text-sm"></table>
   </div>
 </div>
 
-<script src="app.js"></script>
+<script type="module" src="src/main.js"></script>
 </body>
 </html>

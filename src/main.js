@@ -275,8 +275,8 @@ function attrBadge(a) {
   const color = ATTR_COLORS[a] || 'bg-gray-100 text-gray-700';
   const ja = ELEMENT_JA[a] || a;
   const cls = 'px-2 py-0.5 rounded-full text-xs font-medium ' + color + ' whitespace-nowrap' + (a ? ' cursor-pointer hover:opacity-80' : '');
-  const onclick = a ? ' onclick="onAttrClick(\'' + a + '\', event)"' : '';
-  return '<span class="' + cls + '"' + onclick + '>' + ja + '</span>';
+  const data = a ? ' data-attr="' + esc(a) + '"' : '';
+  return '<span class="' + cls + '"' + data + '>' + ja + '</span>';
 }
 
 const TYPE_COLORS = {
@@ -442,18 +442,18 @@ function buildRowHtml(r, opts) {
   const noDeckBadge  = (!r.in_dex && (r.is_spawnable || r.from_fusion || r.is_glyph)) ? ' <span class="fusion-badge" style="background:#b45309">デッキ外</span>' : '';
   const npcBadge     = (!r.in_dex && !r.is_spawnable && !r.from_fusion && !r.is_glyph) ? ' <span class="fusion-badge" style="background:#6b7280">NPC</span>' : '';
   const nameBadges   = fusionBadge + glyphBadge + spawnBadge + noDeckBadge + npcBadge;
-  const tribeOnclick = r.class ? ' onclick="onTribeClick(\'' + r.class + '\', event)"' : '';
+  const tribeData = r.class ? ' data-tribe="' + esc(r.class) + '"' : '';
   const tribeCls = 'text-gray-400 text-xs mt-1' + (r.class ? ' cursor-pointer hover:underline block w-fit mx-auto' : '');
   const attrClassCell =
     '<td class="' + tdBase + ' whitespace-nowrap text-center">' +
     attrBadge(r.attr) +
-    '<div class="' + tribeCls + '"' + tribeOnclick + '>' + (esc(r.class_ja || r.class) || '') + '</div>' +
+    '<div class="' + tribeCls + '"' + tribeData + '>' + (esc(r.class_ja || r.class) || '') + '</div>' +
     '</td>';
   const connectMark = depth > 0 ? '<span class="text-indigo-400 mr-1" title="参照元カードから展開">↳</span>' : '';
   const nameIdCell =
     '<td class="' + tdBase + ' whitespace-nowrap">' +
     '<div class="font-semibold text-gray-100">' + connectMark + '<span class="card-name">' + highlight(r.name, lastQ) + '</span>' + nameBadges + '</div>' +
-    '<div class="text-gray-500 text-xs cursor-pointer hover:underline inline-block" onclick="toggleDetail(\'' + detailId + '\')" title="クリックでJSON表示">' + highlight(r.name_en, lastQ) + '</div>' +
+    '<div class="text-gray-500 text-xs cursor-pointer hover:underline inline-block" data-detail-toggle="' + detailId + '" title="クリックでJSON表示">' + highlight(r.name_en, lastQ) + '</div>' +
     '</td>';
   const flagsHtml = fmtFlags(r);
   const flagsEffCell =
@@ -529,33 +529,33 @@ function renderTable(rows) {
       const ea = sortKey === 'name_en' ? (sortDir === 1 ? ' ▲' : ' ▼') : '';
       const sarr = s => s ? '<span style="color:#818cf8;font-size:0.65em">' + s + '</span>' : '';
       html += '<th class="' + thBase + '"' + thStyle + '>' +
-        '<span class="cursor-pointer hover:text-indigo-300" onclick="onHeaderClick(\'name\')">名前' + sarr(na) + '</span>' +
+        '<span class="cursor-pointer hover:text-indigo-300" data-sort="name">名前' + sarr(na) + '</span>' +
         '<span class="text-gray-600 select-none">/</span>' +
-        '<span class="cursor-pointer hover:text-indigo-300" onclick="onHeaderClick(\'name_en\')">ID' + sarr(ea) + '</span>' +
+        '<span class="cursor-pointer hover:text-indigo-300" data-sort="name_en">ID' + sarr(ea) + '</span>' +
         '</th>';
     } else if (h === '+HP/+BP') {
       const ha = sortKey === 'bonus_hp' ? (sortDir === 1 ? ' ▲' : ' ▼') : '';
       const ba = sortKey === 'bonus_bp' ? (sortDir === 1 ? ' ▲' : ' ▼') : '';
       const sarr = s => s ? '<span style="color:#818cf8;font-size:0.65em">' + s + '</span>' : '';
       html += '<th class="' + thBase + ' text-center"' + thStyle + '>' +
-        '<span class="cursor-pointer hover:text-indigo-300" onclick="onHeaderClick(\'bonus_hp\')">+HP' + sarr(ha) + '</span>' +
+        '<span class="cursor-pointer hover:text-indigo-300" data-sort="bonus_hp">+HP' + sarr(ha) + '</span>' +
         '<span class="text-gray-600 select-none">/</span>' +
-        '<span class="cursor-pointer hover:text-indigo-300" onclick="onHeaderClick(\'bonus_bp\')">+BP' + sarr(ba) + '</span>' +
+        '<span class="cursor-pointer hover:text-indigo-300" data-sort="bonus_bp">+BP' + sarr(ba) + '</span>' +
         '</th>';
     } else if (h === '属性/種族') {
       const aa = sortKey === 'attr_ja' ? (sortDir === 1 ? ' ▲' : ' ▼') : '';
       const ca = sortKey === 'class'   ? (sortDir === 1 ? ' ▲' : ' ▼') : '';
       const sarr = s => s ? '<span style="color:#818cf8;font-size:0.65em">' + s + '</span>' : '';
       html += '<th class="' + thBase + ' text-center"' + thStyle + '>' +
-        '<span class="cursor-pointer hover:text-indigo-300" onclick="onHeaderClick(\'attr_ja\')">属性' + sarr(aa) + '</span>' +
+        '<span class="cursor-pointer hover:text-indigo-300" data-sort="attr_ja">属性' + sarr(aa) + '</span>' +
         '<span class="text-gray-600 select-none">/</span>' +
-        '<span class="cursor-pointer hover:text-indigo-300" onclick="onHeaderClick(\'class\')">種族' + sarr(ca) + '</span>' +
+        '<span class="cursor-pointer hover:text-indigo-300" data-sort="class">種族' + sarr(ca) + '</span>' +
         '</th>';
     } else {
       const sk = SORT_KEYS[h];
       const sortCls = sk && sortKey === sk ? (sortDir === 1 ? ' sort-asc' : ' sort-desc') : '';
-      const onclick = sk ? ' onclick="onHeaderClick(\'' + sk + '\')"' : '';
-      html += '<th class="' + thBase + sortCls + '"' + thStyle + onclick + '>' + h + '</th>';
+      const sortAttr = sk ? ' data-sort="' + sk + '"' : '';
+      html += '<th class="' + thBase + sortCls + '"' + thStyle + sortAttr + '>' + h + '</th>';
     }
   });
   html += '</tr></thead><tbody>';
@@ -848,7 +848,7 @@ function deckCardDetailHtml(r) {
   const tribeSpan = r.class
     ? '<span class="filt" data-tribe="' + esc(r.class) + '" style="color:' + TRIBE_TEXT_COLOR + '">' + esc(cls) + '</span>'
     : '';
-  const typeSpan = '<span class="filt" style="color:#fff" onclick="setType(\'' + r.card_type + '\')">' + (TYPE_LABELS[r.card_type] || r.card_type) + '</span>';
+  const typeSpan = '<span class="filt" style="color:#fff" data-set-type="' + esc(r.card_type) + '">' + (TYPE_LABELS[r.card_type] || r.card_type) + '</span>';
   basic += '<div class="deck-tip-meta">' + attrSpan +
     (tribeSpan ? ' / ' + tribeSpan : '') + ' ・ ' + typeSpan + '</div>';
   if (r.card_type === 'tama') {
@@ -1110,7 +1110,7 @@ document.getElementById('tama-grid').addEventListener('mouseover', e => {
 document.getElementById('deck-file-input').addEventListener('change', onDeckFile);
 // 検索結果: 画像セル(パディング含む)のクリックでのみ1枚追加 (既存のクリック要素は除外)
 document.getElementById('table-wrap').addEventListener('click', e => {
-  if (e.target.closest('.kw, .cardref, [onclick]')) return;
+  if (e.target.closest('.kw, .cardref, [data-attr], [data-tribe], [data-detail-toggle], [data-set-type], [data-sort]')) return;
   if (!e.target.closest('td:first-child')) return;
   const tr = e.target.closest('tr[data-card-id]');
   if (tr) deckAdd(tr.dataset.cardId);
@@ -1218,12 +1218,21 @@ function updateFilterResetButtons() {
   if (allBtn) allBtn.disabled = allDefault;
 }
 
-// コスト・効果テキスト内の属性/種族(.filt)クリックで、サイドバーと同じ絞り込みを行う
+// 動的生成HTML(検索結果テーブル/効果テキスト/デッキ詳細ポップアップ)内の
+// クリック操作をイベント委譲でまとめて処理する(旧: インライン onclick)。
 document.addEventListener('click', e => {
-  const el = e.target.closest('.filt');
-  if (!el) return;
-  if (el.dataset.attr)  { onAttrClick(el.dataset.attr, e); }
-  else if (el.dataset.tribe) { onTribeClick(el.dataset.tribe, e); }
+  const filt = e.target.closest('[data-attr], [data-tribe]');
+  if (filt) {
+    if (filt.dataset.attr) onAttrClick(filt.dataset.attr, e);
+    else onTribeClick(filt.dataset.tribe, e);
+    return;
+  }
+  const typeEl = e.target.closest('[data-set-type]');
+  if (typeEl) { setType(typeEl.dataset.setType); return; }
+  const detEl = e.target.closest('[data-detail-toggle]');
+  if (detEl) { toggleDetail(detEl.dataset.detailToggle); return; }
+  const sortEl = e.target.closest('[data-sort]');
+  if (sortEl) { onHeaderClick(sortEl.dataset.sort); return; }
 });
 
 // ---- ショートカット一覧モーダル ----
@@ -1290,7 +1299,7 @@ let _lastMouse = { x: 0, y: 0 };
 document.addEventListener('mousemove', e => { _lastMouse.x = e.clientX; _lastMouse.y = e.clientY; }, { passive: true });
 
 // マウス位置の要素から検索キーワードを抽出する(.filt/.kw/.cardref/属性・種族バッジ/名前/ID)
-const KW_TOKEN_SELECTOR = '.filt, .kw, .cardref, .card-name, .card-id, [onclick*="onAttrClick"], [onclick*="onTribeClick"], [onclick*="toggleDetail"]';
+const KW_TOKEN_SELECTOR = '.filt, .kw, .cardref, .card-name, .card-id, [data-attr], [data-tribe], [data-detail-toggle]';
 
 function keywordFromElement(el) {
   if (!el) return '';
@@ -1400,4 +1409,54 @@ async function init() {
   doSearch();
 }
 
+// ---- 静的UI(index.html)のイベント登録 ----
+// 旧: インライン on* 属性。すべて addEventListener へ移行した。
+function wireStaticControls() {
+  const $ = id => document.getElementById(id);
+  // ヘッダー
+  $('reset-all-btn').addEventListener('click', resetAllFilters);
+  $('shortcut-btn').addEventListener('click', openShortcutModal);
+  // 各セクションの「戻す」「保存」
+  document.querySelectorAll('.sec-reset[data-sec]').forEach(b =>
+    b.addEventListener('click', () => resetSection(b.dataset.sec)));
+  document.querySelectorAll('.sec-save[data-sec]').forEach(b =>
+    b.addEventListener('click', () => saveSectionDefault(b.dataset.sec)));
+  // カードタイプ
+  TYPES.forEach(t => $('btn-' + t).addEventListener('click', () => setType(t)));
+  // キーワード
+  $('q').addEventListener('input', onKwInput);
+  $('q').addEventListener('keydown', onKwKeydown);
+  $('q').addEventListener('blur', commitKwHistory);
+  $('kw-clear').addEventListener('click', clearKw);
+  $('kw-history-btn').addEventListener('click', toggleKwHistory);
+  // 検索対象 / カード範囲のチェックボックス
+  ['target-name', 'target-id', 'target-cost', 'target-effect', 'target-json',
+   'show-dex', 'show-spawn', 'show-npc'].forEach(id =>
+    $(id).addEventListener('change', doSearch));
+  // レベル
+  [['lv-all', ''], ['lv-0', '0'], ['lv-1', '1'], ['lv-2', '2'], ['lv-3', '3'], ['lv-4', '4']]
+    .forEach(([id, v]) => $(id).addEventListener('click', () => setLv(v)));
+  // 属性: 闇属性を含む
+  $('include-dark').addEventListener('change', () => { updateAttrHighlight(); doSearch(); });
+  // デッキ編集ペイン
+  $('deck-toggle-bar').addEventListener('click', toggleDeckPane);
+  $('tama-btn').addEventListener('click', openTamaPicker);
+  $('deck-name').addEventListener('click', editDeckName);
+  $('deck-restrict-flag').addEventListener('change', function () {
+    deck.restrict = this.checked; saveDeck(); syncTableRestrictClass();
+  });
+  $('deck-import').addEventListener('click', importDeck);
+  $('deck-export').addEventListener('click', exportDeck);
+  $('deck-clear').addEventListener('click', clearDeck);
+  // タマDNA選択モーダル(背景クリック / ×ボタンで閉じる)
+  const tamaModal = $('tama-modal');
+  tamaModal.addEventListener('click', e => { if (e.target === tamaModal) closeTamaPicker(); });
+  $('tama-close').addEventListener('click', closeTamaPicker);
+  // ショートカット一覧モーダル(背景クリック / ×ボタンで閉じる)
+  const scModal = $('shortcut-modal');
+  scModal.addEventListener('click', closeShortcutModal);
+  $('shortcut-close').addEventListener('click', () => closeShortcutModal());
+}
+
+wireStaticControls();
 init();
