@@ -74,8 +74,8 @@ function removeKwHistory(h) {
 // ==================== なんでもキーワード検索 ====================
 let _lastMouse = { x: 0, y: 0 };
 
-// マウス位置の要素から検索キーワードを抽出する(.filt/.kw/.cardref/属性・種族バッジ/名前/ID)
-const KW_TOKEN_SELECTOR = '.filt, .kw, .cardref, .card-name, .card-id, [data-attr], [data-tribe], [data-detail-toggle]';
+// マウス位置の要素から検索キーワードを抽出する(.filt/.kw/.cardref/属性・種族バッジ/名前/ID/属性エネルギー句)
+const KW_TOKEN_SELECTOR = '.filt, .kw, .cardref, .card-name, .card-id, [data-attr], [data-tribe], [data-kw], [data-detail-toggle]';
 
 function keywordFromElement(el) {
   if (!el) return '';
@@ -96,11 +96,19 @@ function keywordFromElement(el) {
   let text;
   if (tok && tok.dataset.tribe) text = state.TRIBES_JA[tok.dataset.tribe] || tok.dataset.tribe;
   else if (tok && tok.dataset.attr) text = state.ELEMENT_JA[tok.dataset.attr] || tok.dataset.attr;
+  else if (tok && tok.dataset.kw) text = tok.dataset.kw;
   else text = tok ? tok.textContent : el.textContent;
   text = (text || '').trim();
   // トークンが取れない/長すぎる場合は採用しない(セル全体などの誤検出を避ける)
   if (!tok && text.length > 30) return '';
   return text;
+}
+
+function searchKeyword(kw) {
+  const input = document.getElementById('q');
+  input.value = kw;
+  doSearch();
+  commitKwHistory();  // 入力欄をフォーカスしないため、blurに頼らず明示的に履歴へ反映する
 }
 
 export function keywordSearchAtCursor() {
@@ -112,10 +120,7 @@ export function keywordSearchAtCursor() {
     kw = keywordFromElement(el);
   }
   if (!kw) return;
-  const input = document.getElementById('q');
-  input.value = kw;
-  doSearch();
-  commitKwHistory();  // 入力欄をフォーカスしないため、blurに頼らず明示的に履歴へ反映する
+  searchKeyword(kw);
 }
 
 // init() から呼ばれる、キーワード検索関連のイベント登録。
@@ -131,4 +136,9 @@ export function wireKeywordEvents() {
     if (!list.classList.contains('hidden') && !list.contains(e.target) && e.target !== btn) hideKwHistory();
   });
   document.addEventListener('mousemove', e => { _lastMouse.x = e.clientX; _lastMouse.y = e.clientY; }, { passive: true });
+  // 「風属性エネルギー」等のフレーズ(data-kw)クリックは属性フィルタではなくキーワード検索を行う。
+  document.addEventListener('click', e => {
+    const kwEl = e.target.closest('[data-kw]');
+    if (kwEl) searchKeyword(kwEl.dataset.kw);
+  });
 }
