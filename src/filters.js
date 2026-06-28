@@ -69,6 +69,7 @@ export function buildTribeList() {
   sorted.forEach(t => {
     const el = document.createElement('div');
     el.id = 'tribe-row-' + t;
+    el.dataset.tribe = t;
     el.className = 'shrink-0 whitespace-nowrap px-2 py-1 rounded-full text-xs text-gray-200 bg-gray-600 cursor-pointer select-none hover:bg-gray-500';
     const emoji = TRIBE_EMOJI[t] ? TRIBE_EMOJI[t] + ' ' : '';
     el.textContent = emoji + (state.TRIBES_JA[t] || t);

@@ -1,6 +1,7 @@
 // キーワード入力欄の履歴管理と、マウス位置の語からのキーワード検索("F"キー)。
 import { debounce } from './utils.js';
 import { doSearch } from './filters.js';
+import { state } from './state.js';
 
 let kwHistory = [];
 try { kwHistory = JSON.parse(localStorage.getItem('kw-history') || '[]'); } catch (e) { kwHistory = []; }
@@ -91,7 +92,11 @@ function keywordFromElement(el) {
       if (dist < bestDist) { bestDist = dist; tok = c; }
     });
   }
-  let text = tok ? tok.textContent : el.textContent;
+  // 種族バッジ等は絵文字付きの表示テキストを持つため、絵文字なしの元データ(data-tribe等)があれば優先する
+  let text;
+  if (tok && tok.dataset.tribe) text = state.TRIBES_JA[tok.dataset.tribe] || tok.dataset.tribe;
+  else if (tok && tok.dataset.attr) text = state.ELEMENT_JA[tok.dataset.attr] || tok.dataset.attr;
+  else text = tok ? tok.textContent : el.textContent;
   text = (text || '').trim();
   // トークンが取れない/長すぎる場合は採用しない(セル全体などの誤検出を避ける)
   if (!tok && text.length > 30) return '';
