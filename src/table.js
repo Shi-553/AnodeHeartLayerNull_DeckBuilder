@@ -299,15 +299,20 @@ export function renderTable(rows) {
 
 // 列ヘッダの D&D 並べ替えと、列境界ドラッグによる幅リサイズを配線する。
 // renderTable のたびに <thead> を作り直すため毎回呼ぶ。
+// dataTransfer.setDragImage に渡す、1x1の透明画像。ネイティブDnDが既定で出す
+// 半透明のドラッグ中ゴースト(ヘッダーのスナップショット)を消すためのダミー。
+// 列の並べ替えは青い挿入線で位置を示すので、ゴースト画像は不要。
+const EMPTY_DRAG_IMAGE = document.createElement('canvas');
+EMPTY_DRAG_IMAGE.width = EMPTY_DRAG_IMAGE.height = 1;
+
 function wireColumnHandles(wrap) {
   // ---- D&D 並べ替え(ハンドル起点) ----
   // ドラッグ中は、挿入先に青い縦線を出して落下位置を示す。各列ヘッダを左右半分に分け、
-  // 左半分なら「この列の前」、右半分なら「この列の後」に挿入する(= 右半分をやや広めに
-  // 判定して早めに「後」へ切り替わるよう、しきい値を中央よりわずかに左へ寄せる)。
-  // これにより最後尾の列の右半分をホバーするだけで末尾へドロップできる。
+  // 左半分なら「この列の前」、右半分なら「この列の後」に挿入する。しきい値は全列共通で
+  // 中央(50%)固定(列幅が違っても、見た目の判定基準を統一する)。
   let dragKey = null;
   let dropInfo = null; // { key, after }
-  const AFTER_THRESHOLD = 0.4; // 列幅に対する比率。中央(0.5)より左に寄せて「後」を早めに判定。
+  const AFTER_THRESHOLD = 0.5; // 列幅に対する比率。中央固定、全列で統一。
   const clearDrop = () => wrap.querySelectorAll('th.drop-before, th.drop-after')
     .forEach(t => t.classList.remove('drop-before', 'drop-after'));
   const showDrop = (th, after) => { clearDrop(); th.classList.add(after ? 'drop-after' : 'drop-before'); };
@@ -321,6 +326,7 @@ function wireColumnHandles(wrap) {
       dragKey = th.dataset.col;
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/plain', dragKey); // Firefox はデータ必須
+      e.dataTransfer.setDragImage(EMPTY_DRAG_IMAGE, 0, 0); // 既定の半透明ゴーストを消す
       // 開始直後はまだ移動していないので、元の位置に挿入線を出す(動かさず離せば不変)。
       showDrop(th, false);
       dropInfo = { key: dragKey, after: false };
