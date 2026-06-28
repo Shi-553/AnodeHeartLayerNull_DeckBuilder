@@ -28,11 +28,8 @@
   tr.row-flash td { animation: rowflash 1.0s ease-out; }
   th { position: sticky; top: 0; z-index: 1; cursor: pointer; user-select: none; }
   th:hover { background-color: #374151; }
-  /* 列ヘッダのドラッグ並べ替えハンドル・列幅リサイズハンドル */
+  /* 列ヘッダはth全体がドラッグ可能(ブラウザ/VSCodeタブ方式)。列幅リサイズハンドルのみ別。 */
   th.col-th { position: sticky; }
-  .col-drag { display: inline-block; margin-right: 5px; color: #6b7280; cursor: grab; font-size: 0.85em; vertical-align: middle; }
-  .col-drag:hover { color: #a5b4fc; }
-  .col-drag:active { cursor: grabbing; }
   .col-resize { position: absolute; top: 0; right: 0; width: 6px; height: 100%; cursor: col-resize; z-index: 2; }
   .col-resize:hover { background-color: #4f46e5; }
   /* 列ドラッグ並べ替え中、挿入先を示す青い縦線(この列の前/後ろ) */

@@ -235,10 +235,12 @@ function buildTh(key) {
     sortCls = state.sortKey === col.sortKey ? (state.sortDir === 1 ? ' sort-asc' : ' sort-desc') : '';
     sortAttr = ' data-sort="' + col.sortKey + '"';
   }
-  const handle = '<span class="col-drag" draggable="true" data-col="' + key + '" title="ドラッグで列を移動">⠿</span>';
-  const resize = '<span class="col-resize" data-col="' + key + '"></span>';
-  return '<th class="col-th ' + thBase + alignCls + sortCls + '" data-col="' + key + '" style="padding-top:1.5rem"' + sortAttr + '>' +
-    handle + col.header() + resize + '</th>';
+  // ブラウザ/VSCodeのタブと同様、ヘッダーのどこを掴んでもドラッグで列移動できる
+  // (th 自体を draggable にする)。リサイズハンドルは draggable="false" にして、
+  // そこを掴んだときはネイティブDnDではなく独自の幅リサイズ処理だけが働くようにする。
+  const resize = '<span class="col-resize" data-col="' + key + '" draggable="false"></span>';
+  return '<th class="col-th ' + thBase + alignCls + sortCls + '" data-col="' + key + '" draggable="true" title="ドラッグで列を移動" style="padding-top:1.5rem"' + sortAttr + '>' +
+    col.header() + resize + '</th>';
 }
 
 // グリッド(カード)表示。カード画像を敷き詰め、ホバーで既存の詳細ツールチップ(.kw)を出す。
@@ -310,19 +312,20 @@ function wireColumnHandles(wrap) {
     .forEach(t => t.classList.remove('drop-before', 'drop-after'));
   const showDrop = (th, after) => { clearDrop(); th.classList.add(after ? 'drop-after' : 'drop-before'); };
 
-  wrap.querySelectorAll('.col-drag').forEach(h => {
-    h.addEventListener('dragstart', e => {
-      dragKey = h.dataset.col;
+  // th 自体が draggable(ブラウザ/VSCodeタブ方式: ヘッダーのどこを掴んでもドラッグ開始)。
+  // 動かさずに離した場合は通常の click イベントが発火するだけなので、ソートクリックは
+  // そのまま機能する。リサイズハンドルは draggable="false" のため、そこを掴んだ場合は
+  // ネイティブDnDが始まらず、後述の mousedown ベースのリサイズ処理だけが働く。
+  wrap.querySelectorAll('th.col-th').forEach(th => {
+    th.addEventListener('dragstart', e => {
+      dragKey = th.dataset.col;
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/plain', dragKey); // Firefox はデータ必須
       // 開始直後はまだ移動していないので、元の位置に挿入線を出す(動かさず離せば不変)。
-      const selfTh = wrap.querySelector('th.col-th[data-col="' + dragKey + '"]');
-      if (selfTh) showDrop(selfTh, false);
+      showDrop(th, false);
       dropInfo = { key: dragKey, after: false };
     });
-    h.addEventListener('dragend', () => { dragKey = null; dropInfo = null; clearDrop(); });
-  });
-  wrap.querySelectorAll('th.col-th').forEach(th => {
+    th.addEventListener('dragend', () => { dragKey = null; dropInfo = null; clearDrop(); });
     th.addEventListener('dragover', e => {
       if (!dragKey) return;
       e.preventDefault();
