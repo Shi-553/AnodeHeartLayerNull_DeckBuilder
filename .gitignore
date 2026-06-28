@@ -9,3 +9,6 @@ Thumbs.db
 *.ctex
 *.import
 
+# Tailwind CSS ビルド用（tailwind.css は生成物としてコミットする）
+node_modules/
+
