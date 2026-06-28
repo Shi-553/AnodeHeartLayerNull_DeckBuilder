@@ -316,6 +316,16 @@ function wireColumnHandles(wrap) {
   const clearDrop = () => wrap.querySelectorAll('th.drop-before, th.drop-after')
     .forEach(t => t.classList.remove('drop-before', 'drop-after'));
   const showDrop = (th, after) => { clearDrop(); th.classList.add(after ? 'drop-after' : 'drop-before'); };
+  // ドラッグ元の列自身も「特別扱い」せず、他の列と同じ前/後判定を適用する。
+  // 自分自身だけ常に「前」固定にしていると、直後の列の「前」と同じ境界位置になり
+  // (どちらも自分と直後列の間の境界)、隣の列に移っても線の位置が変わらず
+  // 「直後の列を素通りしないと反応しない」ように見えるバグになるため。
+  const updateDrop = (th, clientX) => {
+    const r = th.getBoundingClientRect();
+    const after = (clientX - r.left) > r.width * AFTER_THRESHOLD;
+    showDrop(th, after);
+    dropInfo = { key: th.dataset.col, after };
+  };
 
   // th 自体が draggable(ブラウザ/VSCodeタブ方式: ヘッダーのどこを掴んでもドラッグ開始)。
   // 動かさずに離した場合は通常の click イベントが発火するだけなので、ソートクリックは
@@ -327,25 +337,14 @@ function wireColumnHandles(wrap) {
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/plain', dragKey); // Firefox はデータ必須
       e.dataTransfer.setDragImage(EMPTY_DRAG_IMAGE, 0, 0); // 既定の半透明ゴーストを消す
-      // 開始直後はまだ移動していないので、元の位置に挿入線を出す(動かさず離せば不変)。
-      showDrop(th, false);
-      dropInfo = { key: dragKey, after: false };
+      // 開始時点のカーソル位置で即座に挿入線を出す(動かさず離せば不変)。
+      updateDrop(th, e.clientX);
     });
     th.addEventListener('dragend', () => { dragKey = null; dropInfo = null; clearDrop(); });
     th.addEventListener('dragover', e => {
       if (!dragKey) return;
       e.preventDefault();
-      const key = th.dataset.col;
-      if (key === dragKey) {
-        // 自分自身の上 = 未移動の状態。元の位置のまま表示する。
-        showDrop(th, false);
-        dropInfo = { key, after: false };
-        return;
-      }
-      const r = th.getBoundingClientRect();
-      const after = (e.clientX - r.left) > r.width * AFTER_THRESHOLD;
-      showDrop(th, after);
-      dropInfo = { key, after };
+      updateDrop(th, e.clientX);
     });
     th.addEventListener('drop', e => {
       e.preventDefault();
