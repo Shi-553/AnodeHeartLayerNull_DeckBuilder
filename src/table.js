@@ -299,31 +299,52 @@ export function renderTable(rows) {
 // renderTable のたびに <thead> を作り直すため毎回呼ぶ。
 function wireColumnHandles(wrap) {
   // ---- D&D 並べ替え(ハンドル起点) ----
-  // ドラッグ中は、挿入先(= 対象列の左境界)に青い縦線を出して落下位置を示す。
+  // ドラッグ中は、挿入先に青い縦線を出して落下位置を示す。各列ヘッダを左右半分に分け、
+  // 左半分なら「この列の前」、右半分なら「この列の後」に挿入する(= 右半分をやや広めに
+  // 判定して早めに「後」へ切り替わるよう、しきい値を中央よりわずかに左へ寄せる)。
+  // これにより最後尾の列の右半分をホバーするだけで末尾へドロップできる。
   let dragKey = null;
-  const clearDrop = () => wrap.querySelectorAll('th.drop-before').forEach(t => t.classList.remove('drop-before'));
+  let dropInfo = null; // { key, after }
+  const AFTER_THRESHOLD = 0.4; // 列幅に対する比率。中央(0.5)より左に寄せて「後」を早めに判定。
+  const clearDrop = () => wrap.querySelectorAll('th.drop-before, th.drop-after')
+    .forEach(t => t.classList.remove('drop-before', 'drop-after'));
+  const showDrop = (th, after) => { clearDrop(); th.classList.add(after ? 'drop-after' : 'drop-before'); };
+
   wrap.querySelectorAll('.col-drag').forEach(h => {
     h.addEventListener('dragstart', e => {
       dragKey = h.dataset.col;
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/plain', dragKey); // Firefox はデータ必須
+      // 開始直後はまだ移動していないので、元の位置に挿入線を出す(動かさず離せば不変)。
+      const selfTh = wrap.querySelector('th.col-th[data-col="' + dragKey + '"]');
+      if (selfTh) showDrop(selfTh, false);
+      dropInfo = { key: dragKey, after: false };
     });
-    h.addEventListener('dragend', () => { dragKey = null; clearDrop(); });
+    h.addEventListener('dragend', () => { dragKey = null; dropInfo = null; clearDrop(); });
   });
   wrap.querySelectorAll('th.col-th').forEach(th => {
     th.addEventListener('dragover', e => {
       if (!dragKey) return;
       e.preventDefault();
-      clearDrop();
-      if (th.dataset.col !== dragKey) th.classList.add('drop-before');
+      const key = th.dataset.col;
+      if (key === dragKey) {
+        // 自分自身の上 = 未移動の状態。元の位置のまま表示する。
+        showDrop(th, false);
+        dropInfo = { key, after: false };
+        return;
+      }
+      const r = th.getBoundingClientRect();
+      const after = (e.clientX - r.left) > r.width * AFTER_THRESHOLD;
+      showDrop(th, after);
+      dropInfo = { key, after };
     });
     th.addEventListener('drop', e => {
       e.preventDefault();
-      const targetKey = th.dataset.col;
       clearDrop();
-      if (!dragKey || dragKey === targetKey) return;
-      moveColumn(dragKey, targetKey);
+      if (!dragKey || !dropInfo || dropInfo.key === dragKey) { dragKey = null; dropInfo = null; return; }
+      moveColumn(dragKey, dropInfo.key, dropInfo.after);
       dragKey = null;
+      dropInfo = null;
       renderTable(state.lastRows);
       updateLayoutResetButton();
     });

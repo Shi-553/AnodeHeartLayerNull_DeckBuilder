@@ -35,8 +35,9 @@
   .col-drag:active { cursor: grabbing; }
   .col-resize { position: absolute; top: 0; right: 0; width: 6px; height: 100%; cursor: col-resize; z-index: 2; }
   .col-resize:hover { background-color: #4f46e5; }
-  /* 列ドラッグ並べ替え中、挿入先(対象列の左境界)を示す青い縦線 */
+  /* 列ドラッグ並べ替え中、挿入先を示す青い縦線(この列の前/後ろ) */
   th.col-th.drop-before { box-shadow: inset 3px 0 0 0 #4f46e5; }
+  th.col-th.drop-after { box-shadow: inset -3px 0 0 0 #4f46e5; }
   th.sort-asc::after  { content: ' ▲'; font-size: 0.65em; color: #818cf8; }
   th.sort-desc::after { content: ' ▼'; font-size: 0.65em; color: #818cf8; }
   #q::-webkit-search-cancel-button { display: none; }

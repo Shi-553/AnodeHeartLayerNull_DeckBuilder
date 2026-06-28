@@ -52,15 +52,19 @@ export function activeOrder() {
   return [...valid, ...missing];
 }
 
-// fromKey を toKey の直前へ移動する。
-export function moveColumn(fromKey, toKey) {
+// fromKey を toKey の直前(after=false)または直後(after=true)へ移動する。
+// toKey が末尾の列で after=true のときは配列末尾に追加される(= 最後尾へ移動)。
+export function moveColumn(fromKey, toKey, after) {
+  if (fromKey === toKey) return; // 自分自身の上へのドロップは位置不変
   const b = bucket();
   const arr = activeOrder();
   const fi = arr.indexOf(fromKey);
   if (fi < 0) return;
   arr.splice(fi, 1);
-  const ti = arr.indexOf(toKey);
-  arr.splice(ti < 0 ? arr.length : ti, 0, fromKey);
+  let ti = arr.indexOf(toKey);
+  if (ti < 0) ti = arr.length;
+  else if (after) ti += 1;
+  arr.splice(Math.min(ti, arr.length), 0, fromKey);
   layout.columnOrder[b] = arr;
 }
 
