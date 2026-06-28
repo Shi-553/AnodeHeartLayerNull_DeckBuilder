@@ -1,6 +1,6 @@
 // 検索結果テーブルの描画(行HTML生成・ソート・JSON詳細トグル)。
 import { state } from './state.js';
-import { ATTR_COLORS, TYPE_COLORS, TYPE_LABELS, SORT_KEYS } from './constants.js';
+import { ATTR_COLORS, TYPE_LABELS, SORT_KEYS } from './constants.js';
 import { esc, highlight, highlightHtml } from './utils.js';
 
 export function attrBadge(a) {
@@ -11,9 +11,10 @@ export function attrBadge(a) {
   return '<span class="' + cls + '"' + data + '>' + ja + '</span>';
 }
 
+// 属性バッジと違い背景色を付けない(属性色と紛らわしいため)。特性/効果列と同じプレーンな見た目で、
+// クリックでそのタイプに絞り込める(data-set-type、main.js のグローバルクリック委譲で処理)。
 export function typeBadge(t) {
-  const color = TYPE_COLORS[t] || 'bg-gray-200 text-gray-700';
-  return '<span class="px-2 py-0.5 rounded-full text-xs font-medium ' + color + ' whitespace-nowrap">' + (TYPE_LABELS[t] || t) + '</span>';
+  return '<span class="cursor-pointer hover:underline" data-set-type="' + esc(t) + '">' + (TYPE_LABELS[t] || t) + '</span>';
 }
 
 function fmtCost(r) {

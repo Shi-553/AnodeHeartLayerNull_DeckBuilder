@@ -1,4 +1,4 @@
-// 操作ヘルプ(ショートカット一覧)モーダルと、グローバルなキーボード操作。
+// 操作ヘルプモーダルと、グローバルなキーボード操作。
 import { esc } from './utils.js';
 import { resetAllFilters } from './filters.js';
 import { keywordSearchAtCursor } from './keyword.js';
@@ -14,7 +14,6 @@ const SHORTCUTS = [
   ['コスト・効果内の属性 / 種族をクリック', 'その条件で絞り込み'],
   ['F', 'マウス位置の語（属性/種族/名前など）でキーワード検索'],
   ['Esc', 'モーダルを閉じる / 全フィルタを既定値に戻す'],
-  ['?', 'このショートカット一覧を開く'],
 ];
 
 function renderShortcutTable() {
@@ -62,7 +61,6 @@ export function wireShortcutEvents() {
       return;
     }
     if (isTypingTarget(e.target)) return;
-    if (e.key === '?') { e.preventDefault(); openShortcutModal(); return; }
     if (e.key.toLowerCase() === 'f' && !e.ctrlKey && !e.metaKey && !e.altKey) {
       e.preventDefault();
       keywordSearchAtCursor();

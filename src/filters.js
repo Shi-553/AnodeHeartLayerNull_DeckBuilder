@@ -1,7 +1,7 @@
 // サイドバーのフィルタ(タイプ/レベル/属性/種族/検索対象/カード範囲)の状態管理・検索実行・
 // 既定値(保存/戻す)管理。
 import { state } from './state.js';
-import { DARK_MAP, ATTR_COLORS, ALL_CARD_TYPES } from './constants.js';
+import { DARK_MAP, ATTR_COLORS, ALL_CARD_TYPES, TRIBE_EMOJI } from './constants.js';
 import { renderTable } from './table.js';
 import { deckToast } from './toast.js';
 import { stripHtml } from './utils.js';
@@ -62,11 +62,16 @@ export function buildAttrList() {
 
 export function buildTribeList() {
   const wrap = document.getElementById('tribe-list');
-  state.TRIBES.forEach(t => {
+  // カードが多い種族ほど使う機会が多いため、先頭に並べる。
+  const counts = {};
+  state.ALL_CARDS.forEach(e => { if (e.class) counts[e.class] = (counts[e.class] || 0) + 1; });
+  const sorted = [...state.TRIBES].sort((a, b) => (counts[b] || 0) - (counts[a] || 0));
+  sorted.forEach(t => {
     const el = document.createElement('div');
     el.id = 'tribe-row-' + t;
     el.className = 'shrink-0 whitespace-nowrap px-2 py-1 rounded-full text-xs text-gray-200 bg-gray-600 cursor-pointer select-none hover:bg-gray-500';
-    el.textContent = state.TRIBES_JA[t] || t;
+    const emoji = TRIBE_EMOJI[t] ? TRIBE_EMOJI[t] + ' ' : '';
+    el.textContent = emoji + (state.TRIBES_JA[t] || t);
     el.addEventListener('click', e => onTribeClick(t, e));
     wrap.appendChild(el);
   });

@@ -14,8 +14,8 @@
   <div id="header-sec-resets" class="ml-auto flex items-center gap-1.5"></div>
   <button id="reset-all-btn" type="button" title="すべてのフィルタを既定値に戻す (Esc)"
     class="hidden bg-indigo-700 hover:bg-indigo-600 px-2.5 py-0.5 rounded-full text-xs font-semibold">↺ すべて戻す</button>
-  <button id="shortcut-btn" type="button" title="ショートカット一覧 (?)"
-    class="bg-indigo-700 hover:bg-indigo-600 px-2.5 py-0.5 rounded-full text-xs font-semibold">⌨ ショートカット</button>
+  <button id="shortcut-btn" type="button" title="操作ヘルプ"
+    class="bg-indigo-700 hover:bg-indigo-600 px-2.5 py-0.5 rounded-full text-xs font-semibold">❔ 操作ヘルプ</button>
   <span id="count-badge" class="bg-indigo-700 px-3 py-0.5 rounded-full text-xs font-semibold"></span>
 </header>
 
@@ -128,12 +128,12 @@
     <!-- 種族 -->
     <div>
       <div class="flex items-center mb-1.5 gap-1">
-        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">種族 (Class)</p>
+        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">種族</p>
         <button class="sec-reset hidden ml-auto text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="tribes" title="このセクションを既定値に戻す">↺</button>
         <button class="sec-save hidden text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="tribes" title="現在の状態を既定値として保存">💾</button>
       </div>
       <div class="border border-gray-600 rounded-md bg-gray-700 p-1.5">
-        <div id="tribe-list" class="flex flex-wrap gap-1.5"></div>
+        <div id="tribe-list" class="flex flex-wrap justify-center gap-1.5"></div>
       </div>
     </div>
 
@@ -223,11 +223,11 @@
   </div>
 </div>
 
-<!-- ショートカット一覧モーダル -->
+<!-- 操作ヘルプモーダル -->
 <div id="shortcut-modal" class="hidden fixed inset-0 z-[10001] bg-black/60 flex items-center justify-center">
   <div class="bg-gray-800 border border-gray-600 rounded-lg p-4 w-[34rem] max-w-[90vw] max-h-[80vh] overflow-auto">
     <div class="flex items-center mb-3">
-      <span class="font-bold">⌨ ショートカット一覧</span>
+      <span class="font-bold">❔ 操作ヘルプ</span>
       <button id="shortcut-close" class="ml-auto text-gray-400 hover:text-gray-100 text-lg leading-none">×</button>
     </div>
     <table id="shortcut-table" class="w-full text-sm"></table>

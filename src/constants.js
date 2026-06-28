@@ -34,12 +34,6 @@ export const ATTR_COLORS = {
   'Null':        'bg-gray-700 text-gray-200',
 };
 
-export const TYPE_COLORS = {
-  tama:  'bg-indigo-200 text-indigo-800',
-  appli: 'bg-green-200 text-green-800',
-  virus: 'bg-red-200 text-red-800',
-  patch: 'bg-yellow-200 text-yellow-800',
-};
 export const TYPE_LABELS = { tama: 'タマ', appli: 'アプリ', virus: 'ウイルス', patch: 'パッチ' };
 
 // 種族の文字色(scripts/effects_ja.py の _YELLOW と同じ色。効果テキスト内の属性/種族表記と揃える)
@@ -50,4 +44,15 @@ export const ALL_CARD_TYPES = ['tama', 'appli', 'patch', 'virus'];
 export const SORT_KEYS = {
   'タイプ': 'card_type', 'コスト': 'cost',
   'Lv': 'lv', 'HP': 'hp', 'BP': 'bp',
+};
+
+// 種族一覧に添える絵文字(画像サムネイルの代わりに見分けやすくするための軽量な目印)。
+// 未定義の種族(None など)はラベルのみ表示する。
+export const TRIBE_EMOJI = {
+  Fairy: '🧚', Bird: '🐦', Insect: '🐛', Plant: '🌿', Fish: '🐟',
+  Lizard: '🦎', Bear: '🐻', Phantasm: '👻', Man: '🧍', Dragon: '🐉',
+  Gemstone: '💎', Mouse: '🐭', Mechanica: '⚙️', Building: '🏛️', Wolf: '🐺',
+  Amphibian: '🐸', Dinosaur: '🦖', Dummy: '🎭', Fox: '🦊', Mole: '🐾',
+  Rabbit: '🐰', Royalkind: '👑', Faunkind: '🌳', Crab: '🦀', Snail: '🐌',
+  Cat: '🐱', Cheese: '🧀', Snake: '🐍', Goat: '🐐',
 };
