@@ -174,7 +174,7 @@ const COLUMNS = {
     cell: (r) => '<td class="' + tdBase + ' text-center">' + fmtBonus(r) + '</td>',
   },
   effect: {
-    label: '特性/効果', flex: true,
+    label: '特性/効果', defaultWidth: 300,
     header: () => '特性/効果',
     cell: (r) => {
       const eff = fmtEffect(r);
@@ -205,35 +205,23 @@ export function buildRowHtml(r, opts) {
   );
 }
 
-// flex 列(特性/効果)がユーザー指定幅を持たないときに確保する最低幅。
-// table の min-width 計算にも使い、画面が狭いときは効果列を潰さず横スクロールさせる。
-const EFFECT_MIN = 180;
-
-// 列の採用幅。ユーザー保存幅 > 既定幅。flex 列で未指定なら EFFECT_MIN を採用幅とみなす。
+// 列の採用幅(px)。ユーザー保存幅 > 既定幅。全列が固定幅(特性/効果も含む)。
 function electedWidth(key) {
-  const col = COLUMNS[key];
-  if (layout.columnWidths[key]) return layout.columnWidths[key];
-  if (col.flex) return EFFECT_MIN;
-  return col.defaultWidth;
+  return layout.columnWidths[key] || COLUMNS[key].defaultWidth;
 }
 
-// <colgroup>: 列幅を colgroup で一括指定する(table-layout:fixed と組み合わせて
-// リサイズを効かせる)。flex 列は明示幅がなければ幅未指定にして残り幅を吸収させる。
+// <colgroup>: 全列に明示幅を与える(table-layout:fixed と組み合わせてリサイズを効かせる)。
 function buildColgroup(order) {
   let h = '<colgroup>';
   order.forEach(key => {
-    const col = COLUMNS[key];
-    const w = layout.columnWidths[key];
-    if (w) h += '<col data-col="' + key + '" style="width:' + w + 'px">';
-    else if (col.flex) h += '<col data-col="' + key + '">';
-    else h += '<col data-col="' + key + '" style="width:' + col.defaultWidth + 'px">';
+    h += '<col data-col="' + key + '" style="width:' + electedWidth(key) + 'px">';
   });
   return h + '</colgroup>';
 }
 
-// テーブルの最小幅 = 全列の採用幅の合計。これ未満にコンテナが狭まると横スクロールし、
-// 広いときは flex 列が残り幅を吸収する(width:100% と min-width の併用)。
-function tableMinWidth(order) {
+// テーブル全体の幅 = 全列の採用幅の合計。全列固定幅なので、列を縮めれば総幅も縮み
+// (横スクロールが減り)、広げれば総幅が増える、という直感的な挙動になる。
+function tableTotalWidth(order) {
   return order.reduce((sum, key) => sum + electedWidth(key), 0);
 }
 
@@ -248,7 +236,7 @@ function buildTh(key) {
     sortAttr = ' data-sort="' + col.sortKey + '"';
   }
   const handle = '<span class="col-drag" draggable="true" data-col="' + key + '" title="ドラッグで列を移動">⠿</span>';
-  const resize = col.flex ? '' : '<span class="col-resize" data-col="' + key + '"></span>';
+  const resize = '<span class="col-resize" data-col="' + key + '"></span>';
   return '<th class="col-th ' + thBase + alignCls + sortCls + '" data-col="' + key + '" style="padding-top:1.5rem"' + sortAttr + '>' +
     handle + col.header() + resize + '</th>';
 }
@@ -283,7 +271,7 @@ export function renderTable(rows) {
   const order = activeOrder();
   const sorted = sortRows(rows);
 
-  let html = '<table class="w-full border-collapse text-xs bg-gray-900" style="table-layout:fixed;min-width:' + tableMinWidth(order) + 'px">';
+  let html = '<table class="border-collapse text-xs bg-gray-900" style="table-layout:fixed;width:' + tableTotalWidth(order) + 'px">';
   html += buildColgroup(order);
   html += '<thead><tr>';
   order.forEach(key => { html += buildTh(key); });
@@ -311,20 +299,28 @@ export function renderTable(rows) {
 // renderTable のたびに <thead> を作り直すため毎回呼ぶ。
 function wireColumnHandles(wrap) {
   // ---- D&D 並べ替え(ハンドル起点) ----
+  // ドラッグ中は、挿入先(= 対象列の左境界)に青い縦線を出して落下位置を示す。
   let dragKey = null;
+  const clearDrop = () => wrap.querySelectorAll('th.drop-before').forEach(t => t.classList.remove('drop-before'));
   wrap.querySelectorAll('.col-drag').forEach(h => {
     h.addEventListener('dragstart', e => {
       dragKey = h.dataset.col;
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/plain', dragKey); // Firefox はデータ必須
     });
-    h.addEventListener('dragend', () => { dragKey = null; });
+    h.addEventListener('dragend', () => { dragKey = null; clearDrop(); });
   });
   wrap.querySelectorAll('th.col-th').forEach(th => {
-    th.addEventListener('dragover', e => { if (dragKey) e.preventDefault(); });
+    th.addEventListener('dragover', e => {
+      if (!dragKey) return;
+      e.preventDefault();
+      clearDrop();
+      if (th.dataset.col !== dragKey) th.classList.add('drop-before');
+    });
     th.addEventListener('drop', e => {
       e.preventDefault();
       const targetKey = th.dataset.col;
+      clearDrop();
       if (!dragKey || dragKey === targetKey) return;
       moveColumn(dragKey, targetKey);
       dragKey = null;
@@ -334,6 +330,9 @@ function wireColumnHandles(wrap) {
   });
 
   // ---- 列幅リサイズ(境界ハンドル) ----
+  // 列幅を変えるたびにテーブル総幅(= 列幅合計)も更新するので、縮めれば総幅が縮み
+  // 横スクロールが減る、という直感的な挙動になる。
+  const tbl = wrap.querySelector('table');
   wrap.querySelectorAll('.col-resize').forEach(rz => {
     rz.addEventListener('mousedown', e => {
       e.preventDefault();
@@ -345,9 +344,10 @@ function wireColumnHandles(wrap) {
       const startW = colEl.getBoundingClientRect().width;
       document.body.style.cursor = 'col-resize';
       const onMove = ev => {
-        const w = Math.max(36, Math.round(startW + (ev.clientX - startX)));
+        const w = Math.max(48, Math.round(startW + (ev.clientX - startX)));
         colEl.style.width = w + 'px';
         layout.columnWidths[key] = w;
+        if (tbl) tbl.style.width = tableTotalWidth(activeOrder()) + 'px';
       };
       const onUp = () => {
         document.removeEventListener('mousemove', onMove);
