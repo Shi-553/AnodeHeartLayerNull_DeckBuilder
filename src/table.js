@@ -4,6 +4,7 @@ import { state } from './state.js';
 import { ATTR_COLORS, TYPE_LABELS } from './constants.js';
 import { esc, highlight, highlightHtml } from './utils.js';
 import { activeOrder, layout, moveColumn, updateLayoutResetButton } from './layout.js';
+import { deckCardDetailHtml } from './deck.js';
 
 export function attrBadge(a) {
   const color = ATTR_COLORS[a] || 'bg-gray-100 text-gray-700';
@@ -252,6 +253,23 @@ function buildTh(key) {
     handle + col.header() + resize + '</th>';
 }
 
+// グリッド(カード)表示。カード画像を敷き詰め、ホバーで既存の詳細ツールチップ(.kw)を出す。
+// クリック追加は deck.js の table-wrap ハンドラ(.grid-card 分岐)が処理する。
+function renderGrid(rows, wrap) {
+  const sorted = sortRows(rows);
+  let html = '<div class="card-grid">';
+  sorted.forEach(r => {
+    const tip = esc(deckCardDetailHtml(r));
+    const thumbBorder = state.ELEMENT_COLOR[r.attr] || '#4b5563';
+    html += '<div class="grid-card kw" data-card-id="' + esc(r.name_en) + '" data-addable="' + (r.in_dex ? '1' : '0') + '" data-tip="' + tip + '" title="クリックでデッキに追加">' +
+      '<img src="' + esc(r.img_url) + '" alt="" class="grid-thumb" style="border-color:' + esc(thumbBorder) + '" loading="lazy" onerror="this.style.visibility=\'hidden\'">' +
+      '<div class="grid-card-name">' + highlight(r.name, state.lastQ) + nameBadges(r) + '</div>' +
+      '</div>';
+  });
+  html += '</div>';
+  wrap.innerHTML = html;
+}
+
 export function renderTable(rows) {
   state.lastRows = rows;
   const wrap = document.getElementById('table-wrap');
@@ -259,6 +277,8 @@ export function renderTable(rows) {
     wrap.innerHTML = '<p class="text-gray-500 mt-16 text-center text-base">該当するカードがありません</p>';
     return;
   }
+
+  if (layout.viewMode === 'grid') { renderGrid(rows, wrap); return; }
 
   const order = activeOrder();
   const sorted = sortRows(rows);

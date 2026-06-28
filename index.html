@@ -12,7 +12,9 @@
 <header class="sticky top-0 z-20 bg-indigo-900 text-white px-5 py-2 shadow flex items-center gap-4">
   <span class="font-bold text-base tracking-wide">🃏 Anode Heart Layer Null デッキ編集</span>
   <div id="header-sec-resets" class="ml-auto mr-3 flex items-center gap-1.5"></div>
-  <button id="layout-reset" type="button" title="レイアウト(列順・列幅)を保存済み既定に戻す"
+  <button id="view-toggle" type="button" title="リスト表示とグリッド表示を切り替え"
+    class="bg-indigo-700 hover:bg-indigo-600 px-2.5 py-0.5 rounded-full text-xs font-semibold">▦ グリッド</button>
+  <button id="layout-reset" type="button" title="レイアウト(列順・列幅・表示)を保存済み既定に戻す"
     class="hidden bg-amber-700 hover:bg-amber-600 px-2.5 py-0.5 rounded-full text-xs font-semibold">↺ レイアウト</button>
   <button id="layout-save" type="button" title="現在のレイアウト(列順・列幅・表示)を既定として保存"
     class="bg-indigo-700 hover:bg-indigo-600 px-2.5 py-0.5 rounded-full text-xs font-semibold">💾 レイアウト</button>
@@ -164,20 +166,20 @@
 
   </aside>
 
-  <!-- メイン -->
-  <main class="flex-1 min-h-0 p-4 overflow-hidden flex flex-col gap-2">
-    <div id="table-wrap" class="flex-1 min-h-0 overflow-auto rounded-lg shadow"></div>
+  <!-- メイン: 左=検索結果プール / 右=デッキ編集 の左右分割 -->
+  <main class="flex-1 min-h-0 p-4 overflow-hidden flex flex-row gap-3">
+    <div id="table-wrap" class="flex-1 min-w-0 overflow-auto rounded-lg shadow"></div>
 
-    <!-- デッキ編集ペイン -->
-    <div id="deck-pane" class="shrink-0 bg-gray-800 border border-gray-700 rounded-lg flex flex-col">
-      <div id="deck-toggle-bar" class="flex items-center gap-3 px-3 py-1.5 cursor-pointer select-none bg-gray-700 rounded-t-lg">
+    <!-- デッキ編集ペイン (右サイド・全高) -->
+    <div id="deck-pane" class="shrink-0 flex flex-col bg-gray-800 border border-gray-700 rounded-lg overflow-hidden" style="width:22rem">
+      <div id="deck-toggle-bar" class="shrink-0 flex flex-wrap items-center gap-3 px-3 py-1.5 cursor-pointer select-none bg-gray-700">
         <span id="deck-caret" class="text-xs">▼</span>
         <span class="font-bold text-sm">🛠 デッキ編集</span>
         <span id="deck-total-badge" class="px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-600">0 / 60</span>
         <span id="deck-breakdown" class="text-xs text-gray-400"></span>
         <span id="deck-warning" class="text-xs text-amber-400 font-semibold hidden">⚠ 40枚未満</span>
       </div>
-      <div id="deck-body" class="p-3 overflow-auto" style="max-height: 42vh">
+      <div id="deck-body" class="p-3 overflow-auto flex-1 min-h-0">
         <div class="flex items-center gap-3 mb-3 flex-wrap">
           <button id="tama-btn"
             class="flex items-center gap-2 px-2 py-1 rounded bg-gray-700 hover:bg-gray-600 border border-gray-600">

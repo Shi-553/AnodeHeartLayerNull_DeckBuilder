@@ -8,7 +8,7 @@ import { loadDeck, renderDeck, applyDeckPaneState, wireDeckEvents } from './deck
 import { wireHelpEvents } from './help.js';
 import { initTooltip } from './tooltip.js';
 import { deckToast } from './toast.js';
-import { saveLayoutDefault, resetLayout, updateLayoutResetButton } from './layout.js';
+import { layout, saveLayoutDefault, resetLayout, updateLayoutResetButton } from './layout.js';
 
 // 動的生成HTML(検索結果テーブル/効果テキスト/デッキ詳細ポップアップ)内の
 // クリック操作をイベント委譲でまとめて処理する(旧: インライン onclick)。
@@ -21,7 +21,14 @@ document.addEventListener('click', e => {
   if (sortEl) { onHeaderClick(sortEl.dataset.sort); return; }
 });
 
-// レイアウト(列順・列幅)の「保存」「戻す」ボタン。
+// ビュー切替ボタンのラベルを、次に切り替わる表示名で更新する。
+function updateViewToggleLabel() {
+  const btn = document.getElementById('view-toggle');
+  if (!btn) return;
+  btn.textContent = layout.viewMode === 'grid' ? '☰ リスト' : '▦ グリッド';
+}
+
+// レイアウト(列順・列幅・表示)の「保存」「戻す」「ビュー切替」ボタン。
 // フィルタの保存/戻すと同方針: 既定と一致する間は「戻す」を隠す。
 function wireLayoutControls() {
   document.getElementById('layout-save').addEventListener('click', () => {
@@ -32,8 +39,16 @@ function wireLayoutControls() {
   document.getElementById('layout-reset').addEventListener('click', () => {
     resetLayout();
     updateLayoutResetButton();
+    updateViewToggleLabel();
     renderTable(state.lastRows);
   });
+  document.getElementById('view-toggle').addEventListener('click', () => {
+    layout.viewMode = layout.viewMode === 'grid' ? 'list' : 'grid';
+    updateViewToggleLabel();
+    updateLayoutResetButton();
+    renderTable(state.lastRows);
+  });
+  updateViewToggleLabel();
   updateLayoutResetButton();
 }
 

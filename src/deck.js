@@ -56,7 +56,7 @@ function deckSortCmp(a, b) {
   return String(ea.name || a).localeCompare(String(eb.name || b), 'ja');
 }
 
-function deckCardDetailHtml(r) {
+export function deckCardDetailHtml(r) {
   const cls = r.class_ja || r.class;
   // 左: 基本情報
   let basic = '<div class="deck-tip-name"><span class="card-name">' + esc(r.name) + '</span>' +
@@ -370,9 +370,18 @@ export function wireDeckEvents() {
     if (pick) showTamaDesc(pick.dataset.species);
   });
   $('deck-file-input').addEventListener('change', onDeckFile);
-  // 検索結果: 画像セル(パディング含む)のクリックでのみ1枚追加 (既存のクリック要素は除外)。
-  // 画像列は並べ替えで先頭とは限らないため、位置ではなく .img-cell で判定する。
+  // 検索結果のデッキ追加クリック。リスト/グリッド両表示に対応する。
   $('table-wrap').addEventListener('click', e => {
+    // グリッド表示: カードタイル(.grid-card)はタイル自体が .kw(ホバー詳細)のため、
+    //   .kw 除外より先に専用分岐で追加する。タイル内の絞り込みリンクのみ除外。
+    const tile = e.target.closest('.grid-card');
+    if (tile) {
+      if (e.target.closest('.cardref, [data-attr], [data-tribe], [data-set-type]')) return;
+      deckAdd(tile.dataset.cardId);
+      return;
+    }
+    // リスト表示: 画像セル(パディング含む)のクリックでのみ1枚追加 (既存のクリック要素は除外)。
+    // 画像列は並べ替えで先頭とは限らないため、位置ではなく .img-cell で判定する。
     if (e.target.closest('.kw, .cardref, [data-attr], [data-tribe], [data-detail-toggle], [data-set-type], [data-sort]')) return;
     if (!e.target.closest('.img-cell')) return;
     const tr = e.target.closest('tr[data-card-id]');
