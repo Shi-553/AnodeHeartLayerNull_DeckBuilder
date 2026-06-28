@@ -7,7 +7,7 @@ HTML / CSS / JavaScript のみで動作。
 
 | パス | 種別 | 内容 |
 |---|---|---|
-| `index.html` / `src/main.js` / `styles.css` | フロント源 | 手書きソース（JS は ES モジュール） |
+| `index.html` / `src/*.js` / `styles.css` | フロント源 | 手書きソース（JS は ES モジュール） |
 | `tailwind.input.css` | フロント源 | Tailwind CLI の入力（`@import "tailwindcss";` のみ） |
 | `tailwind.css` | 生成物 | `npm run build:css` の出力。クラスを変更したら再生成してコミット |
 | `data/cards.json` / `data/meta.json` | 生成物 | カードデータ（別途生成） |
@@ -15,9 +15,9 @@ HTML / CSS / JavaScript のみで動作。
 
 ## 編集・PR について
 
-- **フロント**（`index.html` / `src/main.js` / `styles.css`）: このリポが唯一のソース。
+- **フロント**（`index.html` / `src/*.js` / `styles.css`）: このリポが唯一のソース。
   ここを直接編集／PR してよい。`git push` で GitHub Pages に反映される。
-  - `index.html` / `src/main.js` 内の Tailwind ユーティリティクラスを追加・変更した場合は、
+  - `index.html` / `src/*.js` 内の Tailwind ユーティリティクラスを追加・変更した場合は、
     push 前に CSS を再生成する（初回のみ `npm install` が必要）:
     ```sh
     npm run build:css
