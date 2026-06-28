@@ -272,16 +272,12 @@ const SECTION_LABELS = {
 };
 
 export function updateFilterResetButtons() {
-  let allDefault = true;
   FILTER_SECTIONS.forEach(sec => {
     const isDef = sectionIsDefault(sec);
-    if (!isDef) allDefault = false;
     document.querySelectorAll(
       '.sec-reset[data-sec="' + sec + '"], .sec-save[data-sec="' + sec + '"], .header-sec-reset[data-sec="' + sec + '"]'
     ).forEach(btn => { btn.classList.toggle('hidden', isDef); });
   });
-  const allBtn = document.getElementById('reset-all-btn');
-  if (allBtn) allBtn.classList.toggle('hidden', allDefault);
 }
 
 // ヘッダーに、変更があるセクションだけ一目でわかる個別の「戻す」ボタンを生成する。
@@ -291,7 +287,7 @@ function buildHeaderSectionResets() {
   FILTER_SECTIONS.forEach(sec => {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'header-sec-reset hidden bg-indigo-700 hover:bg-indigo-600 px-2.5 py-0.5 rounded-full text-xs font-semibold';
+    btn.className = 'header-sec-reset hidden bg-amber-700 hover:bg-amber-600 px-2.5 py-0.5 rounded-full text-xs font-semibold';
     btn.dataset.sec = sec;
     btn.title = (SECTION_LABELS[sec] || sec) + 'を既定値に戻す';
     btn.textContent = '↺ ' + (SECTION_LABELS[sec] || sec);
@@ -304,7 +300,6 @@ function buildHeaderSectionResets() {
 export function wireFilterEvents() {
   const $ = id => document.getElementById(id);
   buildHeaderSectionResets();
-  $('reset-all-btn').addEventListener('click', resetAllFilters);
   document.querySelectorAll('.sec-reset[data-sec]').forEach(b =>
     b.addEventListener('click', () => resetSection(b.dataset.sec)));
   document.querySelectorAll('.sec-save[data-sec]').forEach(b =>
