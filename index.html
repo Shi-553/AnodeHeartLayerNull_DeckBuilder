@@ -12,7 +12,7 @@
 <header class="sticky top-0 z-20 bg-indigo-900 text-white px-5 py-2 shadow flex items-center gap-4">
   <span class="font-bold text-base tracking-wide">🃏 Anode Heart Layer Null デッキ編集</span>
   <div id="header-sec-resets" class="ml-auto mr-3 flex items-center gap-1.5"></div>
-  <button id="shortcut-btn" type="button" title="操作ヘルプ"
+  <button id="help-btn" type="button" title="操作ヘルプ"
     class="bg-indigo-700 hover:bg-indigo-600 px-2.5 py-0.5 rounded-full text-xs font-semibold">❔ 操作ヘルプ</button>
   <span id="count-badge" class="bg-indigo-700 px-3 py-0.5 rounded-full text-xs font-semibold"></span>
 </header>
@@ -222,13 +222,13 @@
 </div>
 
 <!-- 操作ヘルプモーダル -->
-<div id="shortcut-modal" class="hidden fixed inset-0 z-[10001] bg-black/60 flex items-center justify-center">
+<div id="help-modal" class="hidden fixed inset-0 z-[10001] bg-black/60 flex items-center justify-center">
   <div class="bg-gray-800 border border-gray-600 rounded-lg p-4 w-[34rem] max-w-[90vw] max-h-[80vh] overflow-auto">
     <div class="flex items-center mb-3">
       <span class="font-bold">❔ 操作ヘルプ</span>
-      <button id="shortcut-close" class="ml-auto text-gray-400 hover:text-gray-100 text-lg leading-none">×</button>
+      <button id="help-close" class="ml-auto text-gray-400 hover:text-gray-100 text-lg leading-none">×</button>
     </div>
-    <table id="shortcut-table" class="w-full text-sm"></table>
+    <table id="help-table" class="w-full text-sm"></table>
   </div>
 </div>
 

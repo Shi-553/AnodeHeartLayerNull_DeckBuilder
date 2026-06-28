@@ -5,7 +5,7 @@ import { onHeaderClick, toggleDetail } from './table.js';
 import { setType, buildAttrList, buildTribeList, doSearch, applyInitialFilterDefaults, wireFilterEvents } from './filters.js';
 import { wireKeywordEvents } from './keyword.js';
 import { loadDeck, renderDeck, applyDeckPaneState, wireDeckEvents } from './deck.js';
-import { wireShortcutEvents } from './shortcuts.js';
+import { wireHelpEvents } from './help.js';
 import { initTooltip } from './tooltip.js';
 
 // 動的生成HTML(検索結果テーブル/効果テキスト/デッキ詳細ポップアップ)内の
@@ -23,7 +23,7 @@ function wireStaticControls() {
   wireFilterEvents();
   wireKeywordEvents();
   wireDeckEvents();
-  wireShortcutEvents();
+  wireHelpEvents();
 }
 
 async function init() {
