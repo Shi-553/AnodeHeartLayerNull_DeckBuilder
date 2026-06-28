@@ -1,0 +1,11 @@
+# このリポはビルド済み静的サイト。data/ static/ も追跡対象（公開コンテンツ）。
+# OS / エディタの一時ファイルのみ除外する。
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+
+# Godot テクスチャキャッシュ等（サイト未使用・保険）
+*.ctex
+*.import
+
