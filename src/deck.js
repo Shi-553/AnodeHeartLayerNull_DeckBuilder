@@ -370,10 +370,11 @@ export function wireDeckEvents() {
     if (pick) showTamaDesc(pick.dataset.species);
   });
   $('deck-file-input').addEventListener('change', onDeckFile);
-  // 検索結果: 画像セル(パディング含む)のクリックでのみ1枚追加 (既存のクリック要素は除外)
+  // 検索結果: 画像セル(パディング含む)のクリックでのみ1枚追加 (既存のクリック要素は除外)。
+  // 画像列は並べ替えで先頭とは限らないため、位置ではなく .img-cell で判定する。
   $('table-wrap').addEventListener('click', e => {
     if (e.target.closest('.kw, .cardref, [data-attr], [data-tribe], [data-detail-toggle], [data-set-type], [data-sort]')) return;
-    if (!e.target.closest('td:first-child')) return;
+    if (!e.target.closest('.img-cell')) return;
     const tr = e.target.closest('tr[data-card-id]');
     if (tr) deckAdd(tr.dataset.cardId);
   });

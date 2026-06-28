@@ -110,7 +110,7 @@ const COLUMNS = {
       const style = depth > 0 ? 'border-left:3px solid #6366f1;padding-left:' + (10 + (depth - 1) * 14) + 'px' : '';
       const styleAttr = style ? ' style="' + style + '"' : '';
       const thumbBorder = state.ELEMENT_COLOR[r.attr] || '#4b5563';
-      return '<td class="' + tdBase + ' text-center"' + styleAttr + ' title="クリックでデッキに追加">' +
+      return '<td class="' + tdBase + ' text-center img-cell"' + styleAttr + ' title="クリックでデッキに追加">' +
         '<img src="' + esc(r.img_url) + '" alt="" class="card-thumb" style="border-color:' + esc(thumbBorder) + '" loading="lazy" onerror="this.style.display=\'none\'"></td>';
     },
   },

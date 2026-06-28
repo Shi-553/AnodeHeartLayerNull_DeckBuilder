@@ -39,8 +39,8 @@
   th.sort-desc::after { content: ' ▼'; font-size: 0.65em; color: #818cf8; }
   #q::-webkit-search-cancel-button { display: none; }
   /* 検索結果の行: 画像セルのクリックでデッキに追加できることを示すホバー強調 (追加不可の行は変化なし) */
-  #table-wrap.restrict-on tbody tr[data-card-id][data-addable="1"] td:first-child:hover,
-  #table-wrap:not(.restrict-on) tbody tr[data-card-id] td:first-child:hover {
+  #table-wrap.restrict-on tbody tr[data-card-id][data-addable="1"] td.img-cell:hover,
+  #table-wrap:not(.restrict-on) tbody tr[data-card-id] td.img-cell:hover {
     background-color: #25324a;
   }
   /* ---- デッキ編集ペイン ---- */
@@ -52,4 +52,4 @@
   .deck-type-group { display: flex; align-items: center; gap: 0.625rem; }
   .deck-type-label { width: 66px; height: 66px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 0.72em; font-weight: bold; color: #9ca3af; }
   .tama-pick { cursor: pointer; }
-  #table-wrap tbody tr[data-card-id] td:first-child { cursor: copy; }
+  #table-wrap tbody tr[data-card-id] td.img-cell { cursor: copy; }
