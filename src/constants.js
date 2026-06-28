@@ -52,7 +52,7 @@ export const TRIBE_EMOJI = {
   Fairy: '🧚', Bird: '🐦', Insect: '🐛', Plant: '🌿', Fish: '🐟',
   Lizard: '🦎', Bear: '🐻', Phantasm: '👻', Man: '🧍', Dragon: '🐉',
   Gemstone: '💎', Mouse: '🐭', Mechanica: '⚙️', Building: '🏛️', Wolf: '🐺',
-  Amphibian: '🐸', Dinosaur: '🦖', Dummy: '🎭', Fox: '🦊', Mole: '🐾',
+  Amphibian: '🐸', Dinosaur: '🦖', Dummy: '🎯', Fox: '🦊', Mole: '🐾',
   Rabbit: '🐰', Royalkind: '👑', Faunkind: '🌳', Crab: '🦀', Snail: '🐌',
   Cat: '🐱', Cheese: '🧀', Snake: '🐍', Goat: '🐐',
 };
