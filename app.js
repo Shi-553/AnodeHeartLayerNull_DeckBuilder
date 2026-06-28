@@ -883,7 +883,7 @@ function renderTamaButton() {
   const icon = document.getElementById('tama-icon');
   const label = document.getElementById('tama-label');
   if (deck.guardian && deck.guardian !== 'None' && DEX_SET.has(deck.guardian)) {
-    icon.src = '/static/creatures/' + deck.guardian + '_Icon.png';
+    icon.src = 'static/creatures/' + deck.guardian + '_Icon.png';
     icon.classList.remove('hidden');
     label.textContent = 'タマDNA: ' + (SPECIES_NAME[deck.guardian] || deck.guardian);
   } else {
@@ -1000,7 +1000,7 @@ function openTamaPicker() {
   DEX_SPECIES.forEach(s => {
     const sel = (s === deck.guardian) ? ' ring-2 ring-indigo-400' : '';
     html += '<div class="tama-pick rounded p-1 hover:bg-gray-700 flex flex-col items-center border border-transparent' + sel + '" data-species="' + s + '">' +
-      '<img src="/static/creatures/' + s + '_Icon.png" style="width:48px;height:48px;object-fit:contain" onerror="this.style.visibility=\'hidden\'">' +
+      '<img src="static/creatures/' + s + '_Icon.png" style="width:48px;height:48px;object-fit:contain" onerror="this.style.visibility=\'hidden\'">' +
       '<span class="text-[10px] text-gray-300 mt-0.5 leading-tight text-center overflow-hidden" style="height:2.6em">' + tamaName(s) + '</span></div>';
   });
   grid.innerHTML = html;
