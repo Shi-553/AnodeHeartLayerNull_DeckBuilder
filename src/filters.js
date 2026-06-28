@@ -73,7 +73,8 @@ export function buildTribeList() {
     el.className = 'shrink-0 whitespace-nowrap px-2 py-1 rounded-full text-xs text-gray-200 bg-gray-600 cursor-pointer select-none hover:bg-gray-500';
     const emoji = TRIBE_EMOJI[t] ? TRIBE_EMOJI[t] + ' ' : '';
     el.textContent = emoji + (state.TRIBES_JA[t] || t);
-    el.addEventListener('click', e => onTribeClick(t, e));
+    // クリックは wireFilterEvents() のドキュメント委譲([data-tribe])が処理する。
+    // ここで個別にも bind すると1クリックで onTribeClick が2回呼ばれ、トグルが相殺されてしまう。
     wrap.appendChild(el);
   });
 }
