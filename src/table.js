@@ -4,7 +4,6 @@ import { state } from './state.js';
 import { ATTR_COLORS, TYPE_LABELS } from './constants.js';
 import { esc, highlight, highlightHtml } from './utils.js';
 import { activeOrder, layout, moveColumn, updateLayoutResetButton } from './layout.js';
-import { deckCardDetailHtml } from './deck.js';
 
 export function attrBadge(a) {
   const color = ATTR_COLORS[a] || 'bg-gray-100 text-gray-700';
@@ -111,7 +110,7 @@ const COLUMNS = {
       const style = depth > 0 ? 'border-left:3px solid #6366f1;padding-left:' + (10 + (depth - 1) * 14) + 'px' : '';
       const styleAttr = style ? ' style="' + style + '"' : '';
       const thumbBorder = state.ELEMENT_COLOR[r.attr] || '#4b5563';
-      return '<td class="' + tdBase + ' text-center img-cell"' + styleAttr + ' title="クリックでデッキに追加">' +
+      return '<td class="' + tdBase + ' text-center img-cell"' + styleAttr + ' title="">' +
         '<img src="' + esc(r.img_url) + '" alt="" class="card-thumb" style="border-color:' + esc(thumbBorder) + '" loading="lazy" onerror="this.style.display=\'none\'"></td>';
     },
   },
@@ -147,26 +146,25 @@ const COLUMNS = {
     cell: (r, ctx) => {
       const depth = ctx.depth || 0;
       const connectMark = depth > 0 ? '<span class="text-indigo-400 mr-1" title="参照元カードから展開">↳</span>' : '';
-      return '<td class="' + tdBase + ' whitespace-nowrap">' +
+      return '<td class="' + tdBase + '">' +
         '<div class="font-semibold text-gray-100">' + connectMark + '<span class="card-name">' + highlight(r.name, state.lastQ) + '</span>' + nameBadges(r) + '</div>' +
-        '<div class="text-gray-500 text-xs cursor-pointer hover:underline inline-block" data-detail-toggle="' + ctx.detailId + '" title="クリックでJSON表示">' + highlight(r.name_en, state.lastQ) + '</div>' +
+        '<div class="text-gray-500 text-xs cursor-pointer hover:underline w-fit" data-detail-toggle="' + ctx.detailId + '" title="クリックでJSON表示">' + highlight(r.name_en, state.lastQ) + '</div>' +
         '</td>';
     },
   },
   cost: {
     label: 'コスト', defaultWidth: 132, sortKey: 'cost',
     header: () => 'コスト',
-    cell: (r) => '<td class="' + tdBase + ' whitespace-nowrap">' + highlightHtml(fmtCost(r), state.lastQ) + '</td>',
+    cell: (r) => '<td class="' + tdBase + ' break-all">' + highlightHtml(fmtCost(r), state.lastQ) + '</td>',
   },
-  hp: {
-    label: 'HP', defaultWidth: 44, align: 'text-center', sortKey: 'hp',
-    header: () => 'HP',
-    cell: (r) => '<td class="' + tdBase + ' text-center font-mono text-gray-200">' + (r.hp !== '' ? esc(r.hp) : '-') + '</td>',
-  },
-  bp: {
-    label: 'BP', defaultWidth: 44, align: 'text-center', sortKey: 'bp',
-    header: () => 'BP',
-    cell: (r) => '<td class="' + tdBase + ' text-center font-mono text-gray-200">' + (r.bp !== '' ? esc(r.bp) : '-') + '</td>',
+  hpBp: {
+    label: 'HP/BP', defaultWidth: 72, align: 'text-center',
+    header: () => sortSpan('HP', 'hp') + sep() + sortSpan('BP', 'bp'),
+    cell: (r) => '<td class="' + tdBase + ' text-center">' +
+      '<span class="font-mono text-gray-200">' + (r.hp !== '' ? esc(r.hp) : '-') + '</span>' +
+      '<span class="text-gray-500">/</span>' +
+      '<span class="font-mono text-gray-200">' + (r.bp !== '' ? esc(r.bp) : '-') + '</span>' +
+      '</td>',
   },
   bonus: {
     label: '+HP/+BP', defaultWidth: 72, align: 'text-center',
@@ -225,11 +223,10 @@ function tableTotalWidth(order) {
   return order.reduce((sum, key) => sum + electedWidth(key), 0);
 }
 
-const thBase = 'px-3 pb-2 border-b border-gray-700 bg-gray-800 font-semibold text-gray-300 whitespace-nowrap text-left sticky top-0 z-10';
+const thBase = 'px-3 pb-2 border-b border-gray-700 bg-gray-800 font-semibold text-gray-300 whitespace-nowrap text-center sticky top-0 z-10';
 
 function buildTh(key) {
   const col = COLUMNS[key];
-  const alignCls = col.align ? ' ' + col.align : '';
   let sortCls = '', sortAttr = '';
   if (col.sortKey) {
     sortCls = state.sortKey === col.sortKey ? (state.sortDir === 1 ? ' sort-asc' : ' sort-desc') : '';
@@ -239,21 +236,20 @@ function buildTh(key) {
   // (th 自体を draggable にする)。リサイズハンドルは draggable="false" にして、
   // そこを掴んだときはネイティブDnDではなく独自の幅リサイズ処理だけが働くようにする。
   const resize = '<span class="col-resize" data-col="' + key + '" draggable="false"></span>';
-  return '<th class="col-th ' + thBase + alignCls + sortCls + '" data-col="' + key + '" draggable="true" title="ドラッグで列を移動" style="padding-top:1.5rem"' + sortAttr + '>' +
+  return '<th class="col-th ' + thBase + sortCls + '" data-col="' + key + '" draggable="true" title="ドラッグで列を移動" style="padding-top:1.5rem"' + sortAttr + '>' +
     col.header() + resize + '</th>';
 }
 
-// グリッド(カード)表示。カード画像を敷き詰め、ホバーで既存の詳細ツールチップ(.kw)を出す。
+// グリッド(カード)表示。ホバーは document 委譲(preview.js)でプレビューパネルに出す。
 // クリック追加は deck.js の table-wrap ハンドラ(.grid-card 分岐)が処理する。
 function renderGrid(rows, wrap) {
   const sorted = sortRows(rows);
   let html = '<div class="card-grid">';
   sorted.forEach(r => {
-    const tip = esc(deckCardDetailHtml(r));
     const thumbBorder = state.ELEMENT_COLOR[r.attr] || '#4b5563';
-    html += '<div class="grid-card kw" data-card-id="' + esc(r.name_en) + '" data-addable="' + (r.in_dex ? '1' : '0') + '" data-tip="' + tip + '" title="クリックでデッキに追加">' +
+    html += '<div class="grid-card" data-card-id="' + esc(r.name_en) + '" data-addable="' + (r.in_dex ? '1' : '0') + '">' +
       '<img src="' + esc(r.img_url) + '" alt="" class="grid-thumb" style="border-color:' + esc(thumbBorder) + '" loading="lazy" onerror="this.style.visibility=\'hidden\'">' +
-      '<div class="grid-card-name">' + highlight(r.name, state.lastQ) + nameBadges(r) + '</div>' +
+      '<div class="grid-card-name">' + highlight(r.name, state.lastQ) + '</div>' +
       '</div>';
   });
   html += '</div>';

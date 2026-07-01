@@ -4,6 +4,7 @@ import { TYPE_LABELS, TRIBE_TEXT_COLOR } from './constants.js';
 import { esc } from './utils.js';
 import { deckToast } from './toast.js';
 import { setType, setLv, effectiveAttrs, updateAttrHighlight, updateTribeHighlight, doSearch, SEARCH_FIELD_FN, TARGET_IDS } from './filters.js';
+import { layout } from './layout.js';
 
 export const DECK_MAX = 60, DECK_MIN = 40, CARD_COPY_MAX = 4;
 const DECK_KEY = 'deck-editor-current';
@@ -91,9 +92,8 @@ export function deckCardDetailHtml(r) {
 function deckTileHtml(id) {
   const e = state.CARD_INDEX[id];
   const n = deck.cards[id];
-  const tip = esc(deckCardDetailHtml(e));
   const thumbBorder = state.ELEMENT_COLOR[e.attr] || '#4b5563';
-  return '<div class="deck-card kw" data-card-id="' + esc(id) + '" data-tip="' + tip + '" >' +
+  return '<div class="deck-card" data-card-id="' + esc(id) + '">' +
     '<img src="' + esc(e.img_url) + '" class="deck-thumb" style="border-color:' + esc(thumbBorder) + '" loading="lazy" onerror="this.style.visibility=\'hidden\'">' +
     '<span class="deck-count">' + n + '</span></div>';
 }
@@ -141,6 +141,14 @@ export function renderDeck() {
     grid.innerHTML = '<p class="text-gray-500 text-xs py-4 text-center">検索結果のカード画像をクリックしてデッキに追加</p>';
     return;
   }
+
+  // innerHTML 置き換え前に既存の img 要素を退避して、再利用でちらつきを防ぐ。
+  const savedImgs = {};
+  grid.querySelectorAll('.deck-card[data-card-id]').forEach(tile => {
+    const img = tile.querySelector('.deck-thumb');
+    if (img) savedImgs[tile.dataset.cardId] = img;
+  });
+
   let html = '';
   DECK_TYPE_ORDER.forEach(type => {
     const ids = Object.keys(deck.cards).filter(id => (state.CARD_INDEX[id] || {}).card_type === type);
@@ -151,6 +159,16 @@ export function renderDeck() {
     ids.slice(1).forEach(id => { html += deckTileHtml(id); });
   });
   grid.innerHTML = html;
+
+  grid.querySelectorAll('.deck-card[data-card-id]').forEach(tile => {
+    const savedImg = savedImgs[tile.dataset.cardId];
+    if (!savedImg) return;
+    const newImg = tile.querySelector('.deck-thumb');
+    if (!newImg) return;
+    savedImg.style.borderColor = newImg.style.borderColor;
+    savedImg.style.visibility = '';
+    newImg.replaceWith(savedImg);
+  });
 }
 
 export function toggleDeckPane() {
@@ -331,6 +349,17 @@ function scrollAndFlashRow(row) {
 export function focusCardInResults(id) {
   const e = state.CARD_INDEX[id];
   if (!e) return;
+  if (layout.viewMode === 'grid') {
+    let card = document.querySelector('.grid-card[data-card-id="' + CSS.escape(id) + '"]');
+    if (!card) {
+      relaxFiltersFor(e);
+      doSearch();
+      card = document.querySelector('.grid-card[data-card-id="' + CSS.escape(id) + '"]');
+    }
+    if (card) scrollAndFlashRow(card);
+    else deckToast('検索結果に表示できませんでした');
+    return;
+  }
   let row = document.querySelector('tr[data-card-id="' + CSS.escape(id) + '"]');
   if (!row) {
     // 現在の検索結果に無い → 原因のフィルタを緩めて再検索

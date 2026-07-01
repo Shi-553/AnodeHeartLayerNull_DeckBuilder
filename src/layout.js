@@ -9,8 +9,8 @@ const LAYOUT_KEY = 'layout-defaults-v1';
 // デフォルト順: 属性/種族(大分類) → 画像 → 名前/ID → 特性/効果 を左に集約し、
 // コスト・Lv・HP・BP・+補正・タイプ などの副次情報を右へ寄せる(情報階層に沿う・4aリサーチ準拠)。
 export const BASE_ORDER = {
-  tama:  ['attrClass', 'img', 'nameId', 'effect', 'cost', 'lv', 'hp', 'bp', 'bonus'],
-  all:   ['attrClass', 'img', 'nameId', 'effect', 'cost', 'lv', 'hp', 'bp', 'bonus', 'type'],
+  tama:  ['attrClass', 'img', 'nameId', 'effect', 'cost', 'lv', 'hpBp', 'bonus'],
+  all:   ['attrClass', 'img', 'nameId', 'effect', 'cost', 'lv', 'hpBp', 'bonus', 'type'],
   other: ['attrClass', 'img', 'nameId', 'effect', 'cost'],
 };
 

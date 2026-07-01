@@ -7,6 +7,7 @@ import { wireKeywordEvents } from './keyword.js';
 import { loadDeck, renderDeck, applyDeckPaneState, wireDeckEvents } from './deck.js';
 import { wireHelpEvents } from './help.js';
 import { initTooltip } from './tooltip.js';
+import { wirePreviewHover, setPreview, wireGridPopup } from './preview.js';
 import { deckToast } from './toast.js';
 import { layout, saveLayoutDefault, resetLayout, updateLayoutResetButton } from './layout.js';
 
@@ -58,6 +59,8 @@ function wireStaticControls() {
   wireDeckEvents();
   wireHelpEvents();
   wireLayoutControls();
+  wirePreviewHover();
+  wireGridPopup();
 }
 
 async function init() {
@@ -84,6 +87,7 @@ async function init() {
   applyDeckPaneState();
   renderDeck();
   doSearch();
+  setPreview(null);
 }
 
 wireStaticControls();

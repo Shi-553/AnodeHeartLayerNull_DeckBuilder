@@ -3,6 +3,8 @@
 import { state } from './state.js';
 import { buildRowHtml } from './table.js';
 
+const TOOLTIP_HIDE_DELAY_MS = 50;
+
 export function initTooltip() {
   const tip = document.createElement('div');
   tip.id = 'kw-tooltip';
@@ -42,12 +44,12 @@ export function initTooltip() {
       tip.style.display = 'none';
       bridge.style.display = 'none';
       hideSubNow(); // B can't outlive A
-    }, 200);
+    }, TOOLTIP_HIDE_DELAY_MS);
   }
 
   function scheduleHideSub() {
     clearTimeout(hideSubTimer);
-    hideSubTimer = setTimeout(hideSubNow, 200);
+    hideSubTimer = setTimeout(hideSubNow, TOOLTIP_HIDE_DELAY_MS);
   }
 
   function cancelHideMain() { clearTimeout(hideMainTimer); }
@@ -106,8 +108,6 @@ export function initTooltip() {
       // Main content keyword -> show main tooltip anchored to the keyword.
       hideSubNow();
       tip.innerHTML = el.dataset.tip;
-      // デッキカードの詳細ポップアップは専用に幅広・大きめ表示にする
-      tip.classList.toggle('deck-detail', el.classList.contains('deck-card'));
       tip._sourceRow = el.closest('tr');
       showAt(el, tip, bridge);
     }
