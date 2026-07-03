@@ -72,7 +72,7 @@ export function onHeaderClick(key) {
 //    複合ソート列(属性/種族・名前/ID・+HP/+BP)は header() 内で個別に矢印を描く。
 //  - flex:true の列(特性/効果)は <col> に幅を指定せず残り幅を吸収する。
 
-const tdBase = 'px-3 py-2 border-b border-gray-700';
+const tdBase = 'px-1 py-2 border-b border-gray-700';
 
 function sortArrow(key) {
   return state.sortKey === key ? (state.sortDir === 1 ? ' ▲' : ' ▼') : '';
@@ -131,7 +131,7 @@ const COLUMNS = {
     cell: (r) => '<td class="' + tdBase + '">' + typeBadge(r.card_type) + '</td>',
   },
   lv: {
-    label: 'Lv', defaultWidth: 40, align: 'text-center', sortKey: 'lv',
+    label: 'Lv', defaultWidth: 30, align: 'text-center', sortKey: 'lv',
     header: () => 'Lv',
     cell: (r) => {
       const lv = r.lv !== '' && r.lv != null
@@ -141,7 +141,7 @@ const COLUMNS = {
     },
   },
   nameId: {
-    label: '名前/ID', defaultWidth: 168,
+    label: '名前/ID', defaultWidth: 110,
     header: () => sortSpan('名前', 'name') + sep() + sortSpan('ID', 'name_en'),
     cell: (r, ctx) => {
       const depth = ctx.depth || 0;
@@ -158,7 +158,7 @@ const COLUMNS = {
     cell: (r) => '<td class="' + tdBase + ' break-all">' + highlightHtml(fmtCost(r), state.lastQ) + '</td>',
   },
   hpBp: {
-    label: 'HP/BP', defaultWidth: 72, align: 'text-center',
+    label: 'HP/BP', defaultWidth: 40, align: 'text-center',
     header: () => sortSpan('HP', 'hp') + sep() + sortSpan('BP', 'bp'),
     cell: (r) => '<td class="' + tdBase + ' text-center">' +
       '<span class="font-mono text-gray-200">' + (r.hp !== '' ? esc(r.hp) : '-') + '</span>' +
@@ -167,7 +167,7 @@ const COLUMNS = {
       '</td>',
   },
   bonus: {
-    label: '+HP/+BP', defaultWidth: 72, align: 'text-center',
+    label: '+HP/+BP', defaultWidth: 60, align: 'text-center',
     header: () => sortSpan('+HP', 'bonus_hp') + sep() + sortSpan('+BP', 'bonus_bp'),
     cell: (r) => '<td class="' + tdBase + ' text-center">' + fmtBonus(r) + '</td>',
   },
@@ -223,7 +223,7 @@ function tableTotalWidth(order) {
   return order.reduce((sum, key) => sum + electedWidth(key), 0);
 }
 
-const thBase = 'px-3 pb-2 border-b border-gray-700 bg-gray-800 font-semibold text-gray-300 whitespace-nowrap text-center sticky top-0 z-10';
+const thBase = 'px-0 pb-2 border-b border-gray-700 bg-gray-800 font-semibold text-gray-300 whitespace-nowrap text-center sticky top-0 z-10';
 
 function buildTh(key) {
   const col = COLUMNS[key];
@@ -237,7 +237,7 @@ function buildTh(key) {
   // そこを掴んだときはネイティブDnDではなく独自の幅リサイズ処理だけが働くようにする。
   const resize = '<span class="col-resize" data-col="' + key + '" draggable="false"></span>';
   return '<th class="col-th ' + thBase + sortCls + '" data-col="' + key + '" draggable="true" title="ドラッグで列を移動" style="padding-top:1.5rem"' + sortAttr + '>' +
-    col.header() + resize + '</th>';
+    '<span class="col-th-label">' + col.header() + '</span>' + resize + '</th>';
 }
 
 // グリッド(カード)表示。ホバーは document 委譲(preview.js)でプレビューパネルに出す。
@@ -308,6 +308,8 @@ function wireColumnHandles(wrap) {
   let dragKey = null;
   let dropInfo = null; // { key, after }
   const AFTER_THRESHOLD = 0.5; // 列幅に対する比率。中央固定、全列で統一。
+  const pageZoom = () => Number.parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+  const toCssX = clientX => clientX / pageZoom();
   const clearDrop = () => wrap.querySelectorAll('th.drop-before, th.drop-after')
     .forEach(t => t.classList.remove('drop-before', 'drop-after'));
   const showDrop = (th, after) => { clearDrop(); th.classList.add(after ? 'drop-after' : 'drop-before'); };
@@ -317,7 +319,8 @@ function wireColumnHandles(wrap) {
   // 「直後の列を素通りしないと反応しない」ように見えるバグになるため。
   const updateDrop = (th, clientX) => {
     const r = th.getBoundingClientRect();
-    const after = (clientX - r.left) > r.width * AFTER_THRESHOLD;
+    const pointerCssX = toCssX(clientX);
+    const after = (pointerCssX - r.left) > r.width * AFTER_THRESHOLD;
     showDrop(th, after);
     dropInfo = { key: th.dataset.col, after };
   };
@@ -371,7 +374,7 @@ function wireColumnHandles(wrap) {
         const zoom = Number.parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
         const pointerCssX = ev.clientX / zoom;
         const left = colEl.getBoundingClientRect().left;
-        const w = Math.max(48, Math.round(pointerCssX - left));
+        const w = Math.max(20, Math.round(pointerCssX - left));
         colEl.style.width = w + 'px';
         layout.columnWidths[key] = w;
         if (tbl) tbl.style.width = tableTotalWidth(activeOrder()) + 'px';

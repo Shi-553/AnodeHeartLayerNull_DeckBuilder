@@ -44,6 +44,15 @@ body {
   th:hover { background-color: #374151; }
   /* 列ヘッダはth全体がドラッグ可能(ブラウザ/VSCodeタブ方式)。列幅リサイズハンドルのみ別。 */
   th.col-th { position: sticky; }
+  th.col-th .col-th-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0 2px;
+    box-sizing: border-box;
+    text-align: center;
+  }
   .col-resize { position: absolute; top: 0; right: 0; width: 6px; height: 100%; cursor: col-resize; z-index: 2; }
   .col-resize:hover { background-color: #4f46e5; }
   /* 列ドラッグ並べ替え中、挿入先を示す青い縦線(この列の前/後ろ) */
