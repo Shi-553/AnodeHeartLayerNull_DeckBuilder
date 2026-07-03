@@ -16,6 +16,14 @@ body {
   inset: 0;
   width: 100%;
 }
+#workspace-panels {
+  width: fit-content;
+  max-width: 100%;
+}
+#main-pane {
+  width: 980px;
+  max-width: max(26rem, calc(100vw - 46rem));
+}
   .effect-text { line-height: 1.7em; white-space: pre-wrap; word-break: break-word; font-size: 1em; }
   .json-detail pre { line-height: 1.5em; white-space: pre-wrap; word-break: break-all; font-family: monospace; font-size: 0.75em; color: #9ca3af; }
   .kw { border-bottom: 1px dashed currentColor; cursor: help; }

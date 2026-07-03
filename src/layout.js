@@ -18,6 +18,8 @@ const BUILTIN_LAYOUT_DEFAULTS = {
   columnOrder: structuredClone(BASE_ORDER),  // { tama:[], all:[], other:[] }
   columnWidths: {},                          // { <colKey>: px } 列キー単位で型をまたいで共有
   viewMode: 'list',                          // 'list' | 'grid'(4dで使用)
+  gridColumns: 6,
+  gridCardWidth: 136,
 };
 
 // 保存済み既定値(localStorage)。組み込み既定値に上書きマージ。
@@ -32,6 +34,8 @@ export const layout = {
   columnOrder: structuredClone(LAYOUT_DEFAULTS.columnOrder),
   columnWidths: Object.assign({}, LAYOUT_DEFAULTS.columnWidths),
   viewMode: LAYOUT_DEFAULTS.viewMode,
+  gridColumns: LAYOUT_DEFAULTS.gridColumns,
+  gridCardWidth: LAYOUT_DEFAULTS.gridCardWidth,
 };
 
 // currentType → 列順バケット名。
@@ -69,7 +73,13 @@ export function moveColumn(fromKey, toKey, after) {
 }
 
 function snapshot(src) {
-  return JSON.stringify({ o: src.columnOrder, w: src.columnWidths, v: src.viewMode });
+  return JSON.stringify({
+    o: src.columnOrder,
+    w: src.columnWidths,
+    v: src.viewMode,
+    gc: src.gridColumns,
+    gw: src.gridCardWidth,
+  });
 }
 
 export function layoutIsDefault() {
@@ -81,6 +91,8 @@ export function saveLayoutDefault() {
     columnOrder: structuredClone(layout.columnOrder),
     columnWidths: Object.assign({}, layout.columnWidths),
     viewMode: layout.viewMode,
+    gridColumns: layout.gridColumns,
+    gridCardWidth: layout.gridCardWidth,
   };
   localStorage.setItem(LAYOUT_KEY, JSON.stringify(LAYOUT_DEFAULTS));
 }
@@ -89,6 +101,8 @@ export function resetLayout() {
   layout.columnOrder = structuredClone(LAYOUT_DEFAULTS.columnOrder);
   layout.columnWidths = Object.assign({}, LAYOUT_DEFAULTS.columnWidths);
   layout.viewMode = LAYOUT_DEFAULTS.viewMode;
+  layout.gridColumns = LAYOUT_DEFAULTS.gridColumns;
+  layout.gridCardWidth = LAYOUT_DEFAULTS.gridCardWidth;
 }
 
 // ヘッダの「↺ レイアウト」ボタンを、既定と一致する間は隠す(filters の戻すボタンと同方針)。

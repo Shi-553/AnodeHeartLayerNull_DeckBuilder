@@ -10,6 +10,7 @@ import { initTooltip } from './tooltip.js';
 import { wirePreviewHover, setPreview, wireGridPopup } from './preview.js';
 import { deckToast } from './toast.js';
 import { layout, saveLayoutDefault, resetLayout, updateLayoutResetButton } from './layout.js';
+import { getActiveTableWidth } from './table.js';
 
 window.scrollTo(0, 0);
 window.addEventListener('load', () => window.scrollTo(0, 0), { once: true });
@@ -32,6 +33,81 @@ function updateViewToggleLabel() {
   btn.textContent = layout.viewMode === 'grid' ? '☰ リスト' : '▦ グリッド';
 }
 
+function updateCenterPaneWidth() {
+  const mainPane = document.getElementById('main-pane');
+  if (!mainPane) return;
+
+  const mainPaneStyle = getComputedStyle(mainPane);
+  const panePaddingX = (Number.parseFloat(mainPaneStyle.paddingLeft) || 0)
+    + (Number.parseFloat(mainPaneStyle.paddingRight) || 0);
+  const deckPane = document.getElementById('deck-pane');
+  const sidePane = document.querySelector('aside');
+  const deckW = deckPane ? Math.ceil(deckPane.getBoundingClientRect().width) : 0;
+  const sideW = sidePane ? Math.ceil(sidePane.getBoundingClientRect().width) : 0;
+  const viewportW = document.documentElement.clientWidth || window.innerWidth;
+  const maxMain = Math.max(420, Math.floor(viewportW - deckW - sideW));
+
+  if (layout.viewMode === 'list') {
+    const tableEl = document.querySelector('#table-wrap table');
+    const wrapEl = document.getElementById('table-wrap');
+    const scrollGutter = wrapEl ? Math.max(0, wrapEl.offsetWidth - wrapEl.clientWidth) : 0;
+    const tableW = tableEl
+      ? Math.ceil(tableEl.getBoundingClientRect().width)
+      : getActiveTableWidth();
+    const desired = Math.max(520, Math.round(tableW + panePaddingX + scrollGutter));
+    mainPane.style.width = Math.min(desired, maxMain) + 'px';
+    return;
+  }
+
+  const css = getComputedStyle(document.documentElement);
+  const gap = Number.parseFloat(css.getPropertyValue('--grid-gap')) || 13;
+  const padding = Number.parseFloat(css.getPropertyValue('--grid-padding')) || 13;
+  const cols = Math.max(1, Math.min(12, Number(layout.gridColumns) || 6));
+  const cardW = Math.max(96, Math.min(240, Number(layout.gridCardWidth) || 136));
+  const gridW = cols * cardW + Math.max(0, cols - 1) * gap + padding * 2;
+  const target = Math.max(520, Math.round(gridW + 32));
+  mainPane.style.width = Math.min(target, maxMain) + 'px';
+}
+
+function updateGridSettingsUI() {
+  const bar = document.getElementById('grid-settings-bar');
+  const colsInput = document.getElementById('grid-cols-input');
+  const sizeInput = document.getElementById('grid-size-input');
+  if (!bar || !colsInput || !sizeInput) return;
+  bar.classList.toggle('hidden', layout.viewMode !== 'grid');
+  colsInput.value = String(Math.max(1, Math.min(12, Number(layout.gridColumns) || 6)));
+  sizeInput.value = String(Math.max(96, Math.min(240, Number(layout.gridCardWidth) || 136)));
+  updateCenterPaneWidth();
+}
+
+function wireGridSettingsControls() {
+  const colsInput = document.getElementById('grid-cols-input');
+  const sizeInput = document.getElementById('grid-size-input');
+  if (!colsInput || !sizeInput) return;
+
+  colsInput.addEventListener('input', () => {
+    const v = Math.max(1, Math.min(12, Number(colsInput.value) || 6));
+    layout.gridColumns = v;
+    colsInput.value = String(v);
+    updateCenterPaneWidth();
+    updateLayoutResetButton();
+    if (layout.viewMode === 'grid') renderTable(state.lastRows);
+  });
+
+  sizeInput.addEventListener('input', () => {
+    const v = Math.max(96, Math.min(240, Number(sizeInput.value) || 136));
+    layout.gridCardWidth = v;
+    sizeInput.value = String(v);
+    updateCenterPaneWidth();
+    updateLayoutResetButton();
+    if (layout.viewMode === 'grid') renderTable(state.lastRows);
+  });
+
+  updateGridSettingsUI();
+  window.addEventListener('resize', updateCenterPaneWidth);
+  window.addEventListener('ahl:list-table-width-changed', updateCenterPaneWidth);
+}
+
 // レイアウト(列順・列幅・表示)の「保存」「戻す」「ビュー切替」ボタン。
 // フィルタの保存/戻すと同方針: 既定と一致する間は「戻す」を隠す。
 function wireLayoutControls() {
@@ -44,15 +120,19 @@ function wireLayoutControls() {
     resetLayout();
     updateLayoutResetButton();
     updateViewToggleLabel();
+    updateGridSettingsUI();
     renderTable(state.lastRows);
   });
   document.getElementById('view-toggle').addEventListener('click', () => {
     layout.viewMode = layout.viewMode === 'grid' ? 'list' : 'grid';
     updateViewToggleLabel();
+    updateGridSettingsUI();
     updateLayoutResetButton();
     renderTable(state.lastRows);
+    updateGridSettingsUI();
   });
   updateViewToggleLabel();
+  updateGridSettingsUI();
   updateLayoutResetButton();
 }
 
@@ -62,6 +142,7 @@ function wireStaticControls() {
   wireDeckEvents();
   wireHelpEvents();
   wireLayoutControls();
+  wireGridSettingsControls();
   wirePreviewHover();
   wireGridPopup();
 }

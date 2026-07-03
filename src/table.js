@@ -223,6 +223,16 @@ function tableTotalWidth(order) {
   return order.reduce((sum, key) => sum + electedWidth(key), 0);
 }
 
+export function getActiveTableWidth() {
+  return tableTotalWidth(activeOrder());
+}
+
+function notifyListWidthChanged(width) {
+  window.dispatchEvent(new CustomEvent('ahl:list-table-width-changed', {
+    detail: { width: Math.max(0, Number(width) || 0) },
+  }));
+}
+
 const thBase = 'px-0 pb-2 border-b border-gray-700 bg-gray-800 font-semibold text-gray-300 whitespace-nowrap text-center sticky top-0 z-10';
 
 function buildTh(key) {
@@ -243,8 +253,23 @@ function buildTh(key) {
 // グリッド(カード)表示。ホバーは document 委譲(preview.js)でプレビューパネルに出す。
 // クリック追加は deck.js の table-wrap ハンドラ(.grid-card 分岐)が処理する。
 function renderGrid(rows, wrap) {
+  if (!renderGrid._didInitialFit) {
+    const cardW = Math.max(96, Math.min(240, Number(layout.gridCardWidth) || 136));
+    const css = getComputedStyle(document.documentElement);
+    const gap = Number.parseFloat(css.getPropertyValue('--grid-gap')) || 13;
+    const padding = Number.parseFloat(css.getPropertyValue('--grid-padding')) || 13;
+    const avail = Math.max(0, wrap.clientWidth);
+    const maxFit = Math.max(1, Math.floor((avail - (padding * 2) + gap) / (cardW + gap)));
+    const currentCols = Math.max(1, Math.min(12, Number(layout.gridColumns) || 6));
+    if (currentCols > maxFit) layout.gridColumns = maxFit;
+    renderGrid._didInitialFit = true;
+  }
+
   const sorted = sortRows(rows);
-  let html = '<div class="card-grid">';
+  const cols = Math.max(1, Math.min(12, Number(layout.gridColumns) || 6));
+  const cardW = Math.max(96, Math.min(240, Number(layout.gridCardWidth) || 136));
+  const thumbW = Math.max(72, Math.round(cardW * 0.92));
+  let html = '<div class="card-grid" style="grid-template-columns:repeat(' + cols + ', minmax(0, ' + cardW + 'px));justify-content:center;--grid-card-width:' + cardW + 'px;--grid-thumb-width:' + thumbW + 'px">';
   sorted.forEach(r => {
     const thumbBorder = state.ELEMENT_COLOR[r.attr] || '#4b5563';
     html += '<div class="grid-card" data-card-id="' + esc(r.name_en) + '" data-addable="' + (r.in_dex ? '1' : '0') + '">' +
@@ -271,6 +296,7 @@ export function renderTable(rows) {
   if (!rows.length) {
     setTableOuterFit(false);
     wrap.innerHTML = '<p class="text-gray-500 mt-16 text-center text-base">該当するカードがありません</p>';
+    notifyListWidthChanged(0);
     return;
   }
 
@@ -293,6 +319,7 @@ export function renderTable(rows) {
 
   html += '</tbody></table>';
   wrap.innerHTML = html;
+  notifyListWidthChanged(tableTotalWidth(order));
 
   // 各本体行に、直後のJSON詳細行への参照を持たせておく
   // (カード名クリックでの参照先行挿入時に、行の末尾を正しく判定するために使う)。
@@ -398,7 +425,11 @@ function wireColumnHandles(wrap) {
         const w = Math.max(20, Math.round(pointerCssX - left));
         colEl.style.width = w + 'px';
         layout.columnWidths[key] = w;
-        if (tbl) tbl.style.width = tableTotalWidth(activeOrder()) + 'px';
+        if (tbl) {
+          const totalWidth = tableTotalWidth(activeOrder());
+          tbl.style.width = totalWidth + 'px';
+          notifyListWidthChanged(totalWidth);
+        }
       };
       const onUp = () => {
         document.removeEventListener('mousemove', onMove);
