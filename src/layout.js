@@ -6,12 +6,12 @@ import { state } from './state.js';
 const LAYOUT_KEY = 'layout-defaults-v1';
 
 // 型ごとの基準列順(= 列の宇宙)。currentType を tama / all / other の3バケットに射影する。
-// デフォルト順: 属性/種族(大分類) → 画像 → 名前/ID → 特性/効果 を左に集約し、
-// コスト・Lv・HP・BP・+補正・タイプ などの副次情報を右へ寄せる(情報階層に沿う・4aリサーチ準拠)。
+// デフォルト順は Lv を先頭にして、画像 → 名前/ID → 特性/効果 → コスト → HP/BP → +補正 → タイプ → 属性/種族。
+// バケットに存在しない列は除外して定義する。
 export const BASE_ORDER = {
-  tama:  ['attrClass', 'img', 'nameId', 'effect', 'cost', 'lv', 'hpBp', 'bonus'],
-  all:   ['attrClass', 'img', 'nameId', 'effect', 'cost', 'lv', 'hpBp', 'bonus', 'type'],
-  other: ['attrClass', 'img', 'nameId', 'effect', 'cost'],
+  tama:  ['lv', 'img', 'nameId', 'effect', 'cost', 'hpBp', 'bonus', 'attrClass'],
+  all:   ['lv', 'img', 'nameId', 'effect', 'cost', 'hpBp', 'bonus', 'type', 'attrClass'],
+  other: ['img', 'nameId', 'effect', 'cost', 'attrClass'],
 };
 
 const BUILTIN_LAYOUT_DEFAULTS = {
