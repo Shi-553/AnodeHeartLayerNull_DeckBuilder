@@ -154,9 +154,11 @@ export function renderDeck() {
     const ids = Object.keys(deck.cards).filter(id => (state.CARD_INDEX[id] || {}).card_type === type);
     if (!ids.length) return;
     ids.sort(deckSortCmp);
-    html += '<div class="deck-type-group"><span class="deck-type-label">' + DECK_TYPE_LABEL[type] + '</span>' +
-            deckTileHtml(ids[0]) + '</div>';
-    ids.slice(1).forEach(id => { html += deckTileHtml(id); });
+      html += '<section class="deck-type-group">' +
+        '<h4 class="deck-type-label">' + DECK_TYPE_LABEL[type] + '</h4>' +
+        '<div class="deck-type-cards">';
+      ids.forEach(id => { html += deckTileHtml(id); });
+      html += '</div></section>';
   });
   grid.innerHTML = html;
 
