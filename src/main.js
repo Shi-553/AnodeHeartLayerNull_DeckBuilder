@@ -11,6 +11,9 @@ import { wirePreviewHover, setPreview, wireGridPopup } from './preview.js';
 import { deckToast } from './toast.js';
 import { layout, saveLayoutDefault, resetLayout, updateLayoutResetButton } from './layout.js';
 
+window.scrollTo(0, 0);
+window.addEventListener('load', () => window.scrollTo(0, 0), { once: true });
+
 // 動的生成HTML(検索結果テーブル/効果テキスト/デッキ詳細ポップアップ)内の
 // クリック操作をイベント委譲でまとめて処理する(旧: インライン onclick)。
 document.addEventListener('click', e => {

@@ -7,8 +7,15 @@
   --grid-padding: calc(10px * var(--grid-scale));
   --grid-card-padding: calc(4px * var(--grid-scale));
 }
-html { zoom: var(--ui-scale); }
-body { font-family: 'Segoe UI', sans-serif; }
+html { zoom: var(--ui-scale); overflow: hidden; }
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  overflow: hidden;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+}
   .effect-cell { }
   .effect-text { line-height: 1.7em; white-space: pre-wrap; word-break: break-word; font-size: 1em; }
   .json-detail pre { line-height: 1.5em; white-space: pre-wrap; word-break: break-all; font-family: monospace; font-size: 0.75em; color: #9ca3af; }

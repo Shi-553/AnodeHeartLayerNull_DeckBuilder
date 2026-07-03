@@ -9,7 +9,7 @@
 </head>
 <body class="bg-gray-900 text-sm text-gray-200 h-screen overflow-hidden">
 
-<header class="sticky top-0 z-20 bg-indigo-900 text-white px-5 py-2 shadow flex items-center gap-4">
+<header class="z-20 bg-indigo-900 text-white px-5 py-2 shadow flex items-center gap-4">
   <span class="font-bold text-base tracking-wide">🃏 Anode Heart Layer Null デッキ編集</span>
   <div id="header-sec-resets" class="ml-auto mr-3 flex items-center gap-1.5"></div>
   <button id="layout-reset" type="button" title="レイアウト(列順・列幅・表示)を保存済み既定に戻す"
@@ -23,7 +23,7 @@
   <span id="count-badge" class="bg-indigo-700 px-3 py-0.5 rounded-full text-xs font-semibold"></span>
 </header>
 
-<div class="flex" style="height: calc((100vh / 1.3 - 40px))">
+<div class="flex" style="height: calc((100vh / 1.3) - 40px)">
 
   <!-- デッキ編集ペイン (左サイド・全高) -->
   <div id="deck-pane" class="shrink-0 flex flex-col bg-gray-800 border-r border-gray-700 overflow-hidden" style="width:28rem">
@@ -75,29 +75,6 @@
   <!-- サイドバー (右) -->
   <aside class="w-72 shrink-0 bg-gray-800 border-l border-gray-700 overflow-y-auto p-4 flex flex-col gap-5">
 
-    <!-- カードタイプ -->
-    <div>
-      <div class="flex items-center mb-1.5 gap-1">
-        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">カードタイプ</p>
-        <button class="sec-reset hidden ml-auto text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="type" title="このセクションを既定値に戻す">↺</button>
-        <button class="sec-save hidden text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="type" title="現在の状態を既定値として保存">💾</button>
-      </div>
-      <div class="flex flex-col gap-1">
-        <button id="btn-all"
-          class="py-1 rounded text-xs font-bold transition bg-gray-600 text-gray-300">全て</button>
-        <div class="grid grid-cols-2 gap-1">
-          <button id="btn-tama"
-            class="py-1 rounded text-xs font-bold transition bg-indigo-600 text-white">タマ</button>
-          <button id="btn-appli"
-            class="py-1 rounded text-xs font-bold transition bg-gray-600 text-gray-300">アプリ</button>
-          <button id="btn-virus"
-            class="py-1 rounded text-xs font-bold transition bg-gray-600 text-gray-300">ウイルス</button>
-          <button id="btn-patch"
-            class="py-1 rounded text-xs font-bold transition bg-gray-600 text-gray-300">パッチ</button>
-        </div>
-      </div>
-    </div>
-
     <!-- キーワード -->
     <div>
       <div class="flex items-center mb-1.5 gap-1">
@@ -140,6 +117,29 @@
           <input type="checkbox" id="target-json" class="rounded">
           <span class="text-xs text-gray-300">JSON</span>
         </label>
+      </div>
+    </div>
+
+    <!-- カードタイプ -->
+    <div>
+      <div class="flex items-center mb-1.5 gap-1">
+        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">カードタイプ</p>
+        <button class="sec-reset hidden ml-auto text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="type" title="このセクションを既定値に戻す">↺</button>
+        <button class="sec-save hidden text-gray-500 hover:text-indigo-300 text-xs leading-none px-1" data-sec="type" title="現在の状態を既定値として保存">💾</button>
+      </div>
+      <div class="flex flex-col gap-1">
+        <button id="btn-all"
+          class="py-1 rounded text-xs font-bold transition bg-gray-600 text-gray-300">全て</button>
+        <div class="grid grid-cols-2 gap-1">
+          <button id="btn-tama"
+            class="py-1 rounded text-xs font-bold transition bg-indigo-600 text-white">タマ</button>
+          <button id="btn-appli"
+            class="py-1 rounded text-xs font-bold transition bg-gray-600 text-gray-300">アプリ</button>
+          <button id="btn-virus"
+            class="py-1 rounded text-xs font-bold transition bg-gray-600 text-gray-300">ウイルス</button>
+          <button id="btn-patch"
+            class="py-1 rounded text-xs font-bold transition bg-gray-600 text-gray-300">パッチ</button>
+        </div>
       </div>
     </div>
 
