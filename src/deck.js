@@ -340,10 +340,37 @@ function relaxFiltersFor(e) {
 
 function scrollAndFlashRow(row) {
   row.scrollIntoView({ block: 'center', behavior: 'auto' });
+  if (row._flashTimer) {
+    clearTimeout(row._flashTimer);
+    row._flashTimer = null;
+  }
+  if (row._flashEndHandler) {
+    row.removeEventListener('animationend', row._flashEndHandler);
+    row._flashEndHandler = null;
+  }
+
+  const clearFlash = () => {
+    row.classList.remove('row-flash');
+    if (row._flashTimer) {
+      clearTimeout(row._flashTimer);
+      row._flashTimer = null;
+    }
+    if (row._flashEndHandler) {
+      row.removeEventListener('animationend', row._flashEndHandler);
+      row._flashEndHandler = null;
+    }
+  };
+
+  row._flashEndHandler = ev => {
+    if (ev.animationName !== 'rowflash') return;
+    clearFlash();
+  };
+
+  row.addEventListener('animationend', row._flashEndHandler);
   row.classList.remove('row-flash');
   void row.offsetWidth;  // アニメーション再起動のためリフロー
   row.classList.add('row-flash');
-  setTimeout(() => row.classList.remove('row-flash'), 1000);
+  row._flashTimer = setTimeout(clearFlash, 1300);
 }
 
 export function focusCardInResults(id) {
