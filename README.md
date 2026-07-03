@@ -25,3 +25,6 @@ HTML / CSS / JavaScript のみで動作。
 - **生成物**（`data/*.json`, `static/`, `tailwind.css`）: 自動生成・同期されるため
   手編集しない。ビルドのたびに上書きされる。カードデータや画像の誤りを見つけた場合は
   Issue で報告してほしい。
+
+## 参考
+- https://wikiwiki.jp/ahln/
