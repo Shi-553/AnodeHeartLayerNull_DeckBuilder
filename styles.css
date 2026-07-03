@@ -42,6 +42,8 @@ body {
   }
   th { position: sticky; top: 0; z-index: 1; cursor: pointer; user-select: none; }
   th:hover { background-color: #374151; }
+  #table-wrap.resizing-col th.col-th:hover,
+  th.col-th.col-resize-hover:hover { background-color: #1f2937; }
   /* 列ヘッダはth全体がドラッグ可能(ブラウザ/VSCodeタブ方式)。列幅リサイズハンドルのみ別。 */
   th.col-th { position: sticky; }
   th.col-th .col-th-label {
@@ -54,7 +56,9 @@ body {
     text-align: center;
   }
   .col-resize { position: absolute; top: 0; right: 0; width: 6px; height: 100%; cursor: col-resize; z-index: 2; }
-  .col-resize:hover { background-color: #4f46e5; }
+  .col-resize::before { content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 3px; transform: translateX(-50%); background: transparent; }
+  .col-resize:hover::before,
+  #table-wrap.resizing-col th.col-th.col-resize-active .col-resize::before { background-color: #4f46e5; }
   /* 列ドラッグ並べ替え中、挿入先を示す青い縦線(この列の前/後ろ) */
   th.col-th.drop-before { box-shadow: inset 3px 0 0 0 #4f46e5; }
   th.col-th.drop-after { box-shadow: inset -3px 0 0 0 #4f46e5; }

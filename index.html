@@ -69,7 +69,9 @@
 
   <!-- メイン: 検索結果カードプール -->
   <main class="flex-1 min-h-0 p-4 overflow-hidden flex flex-col">
-    <div id="table-wrap" class="flex-1 min-w-0 overflow-auto rounded-lg shadow"></div>
+    <div id="table-outer" class="flex-1 min-w-0 overflow-hidden rounded-lg shadow">
+      <div id="table-wrap" class="w-full h-full overflow-auto"></div>
+    </div>
   </main>
 
   <!-- サイドバー (右) -->

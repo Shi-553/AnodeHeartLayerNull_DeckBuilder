@@ -255,15 +255,27 @@ function renderGrid(rows, wrap) {
   wrap.innerHTML = html;
 }
 
+// リスト表示は列幅の合計ぶんだけ枠(#table-outer)を縮めて丸角をテーブル実幅に密着させる
+// (伸ばしたままだと右端に隙間ができ、その隙間の分だけ丸角が四角に見えてしまうため)。
+// グリッド表示は auto-fit で折り返す都合上、枠は従来通り親幅いっぱいに伸ばす必要がある。
+function setTableOuterFit(fit) {
+  const outer = document.getElementById('table-outer');
+  outer.classList.toggle('self-start', fit);
+  outer.classList.toggle('w-fit', fit);
+  outer.classList.toggle('max-w-full', fit);
+}
+
 export function renderTable(rows) {
   state.lastRows = rows;
   const wrap = document.getElementById('table-wrap');
   if (!rows.length) {
+    setTableOuterFit(false);
     wrap.innerHTML = '<p class="text-gray-500 mt-16 text-center text-base">該当するカードがありません</p>';
     return;
   }
 
-  if (layout.viewMode === 'grid') { renderGrid(rows, wrap); return; }
+  if (layout.viewMode === 'grid') { setTableOuterFit(false); renderGrid(rows, wrap); return; }
+  setTableOuterFit(true);
 
   const order = activeOrder();
   const sorted = sortRows(rows);
@@ -361,12 +373,21 @@ function wireColumnHandles(wrap) {
   // 横スクロールが減る、という直感的な挙動になる。
   const tbl = wrap.querySelector('table');
   wrap.querySelectorAll('.col-resize').forEach(rz => {
+    const th = rz.closest('th.col-th');
+    rz.addEventListener('mouseenter', () => {
+      if (th) th.classList.add('col-resize-hover');
+    });
+    rz.addEventListener('mouseleave', () => {
+      if (th) th.classList.remove('col-resize-hover');
+    });
     rz.addEventListener('mousedown', e => {
       e.preventDefault();
       e.stopPropagation(); // ヘッダのソートクリックと競合させない
       const key = rz.dataset.col;
       const colEl = wrap.querySelector('col[data-col="' + key + '"]');
       if (!colEl) return;
+      wrap.classList.add('resizing-col');
+      if (th) th.classList.add('col-resize-active');
       document.body.style.cursor = 'col-resize';
       const onMove = ev => {
         // html zoom 適用時は、マウス座標(clientX)と getBoundingClientRect() が
@@ -383,6 +404,9 @@ function wireColumnHandles(wrap) {
         document.removeEventListener('mousemove', onMove);
         document.removeEventListener('mouseup', onUp);
         document.body.style.cursor = '';
+        wrap.classList.remove('resizing-col');
+        if (th) th.classList.remove('col-resize-hover');
+        if (th) th.classList.remove('col-resize-active');
         updateLayoutResetButton();
       };
       document.addEventListener('mousemove', onMove);
