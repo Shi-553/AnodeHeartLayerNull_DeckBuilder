@@ -249,7 +249,6 @@ function renderGrid(rows, wrap) {
     const thumbBorder = state.ELEMENT_COLOR[r.attr] || '#4b5563';
     html += '<div class="grid-card" data-card-id="' + esc(r.name_en) + '" data-addable="' + (r.in_dex ? '1' : '0') + '">' +
       '<img src="' + esc(r.img_url) + '" alt="" class="grid-thumb" style="border-color:' + esc(thumbBorder) + '" loading="lazy" onerror="this.style.visibility=\'hidden\'">' +
-      '<div class="grid-card-name">' + highlight(r.name, state.lastQ) + '</div>' +
       '</div>';
   });
   html += '</div>';
