@@ -364,11 +364,14 @@ function wireColumnHandles(wrap) {
       const key = rz.dataset.col;
       const colEl = wrap.querySelector('col[data-col="' + key + '"]');
       if (!colEl) return;
-      const startX = e.clientX;
-      const startW = colEl.getBoundingClientRect().width;
       document.body.style.cursor = 'col-resize';
       const onMove = ev => {
-        const w = Math.max(48, Math.round(startW + (ev.clientX - startX)));
+        // html zoom 適用時は、マウス座標(clientX)と getBoundingClientRect() が
+        // 異なる座標系になるため、clientX を CSS座標へ正規化してから計算する。
+        const zoom = Number.parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+        const pointerCssX = ev.clientX / zoom;
+        const left = colEl.getBoundingClientRect().left;
+        const w = Math.max(48, Math.round(pointerCssX - left));
         colEl.style.width = w + 'px';
         layout.columnWidths[key] = w;
         if (tbl) tbl.style.width = tableTotalWidth(activeOrder()) + 'px';
