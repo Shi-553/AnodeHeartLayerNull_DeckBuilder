@@ -52,6 +52,10 @@ body {
   th.sort-asc::after  { content: ' ▲'; font-size: 0.65em; color: #818cf8; }
   th.sort-desc::after { content: ' ▼'; font-size: 0.65em; color: #818cf8; }
   #q::-webkit-search-cancel-button { display: none; }
+  /* 検索結果リストの行境界を少し見やすくする(既存borderよりやや明るい線) */
+  #table-wrap table tbody tr[data-card-id] > td {
+    border-bottom-color: rgba(148, 163, 184, 0.32);
+  }
   /* 検索結果の行: 画像セルのクリックでデッキに追加できることを示すホバー強調 (追加不可の行は変化なし) */
   #table-wrap.restrict-on tbody tr[data-card-id][data-addable="1"] td.img-cell:hover,
   #table-wrap:not(.restrict-on) tbody tr[data-card-id] td.img-cell:hover {
