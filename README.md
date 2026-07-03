@@ -15,8 +15,7 @@ HTML / CSS / JavaScript のみで動作。
 
 ## 編集・PR について
 
-- **フロント**（`index.html` / `src/*.js` / `styles.css`）: このリポが唯一のソース。
-  ここを直接編集／PR してよい。`git push` で GitHub Pages に反映される。
+- **フロント**（`index.html` / `src/*.js` / `styles.css`）: 
   - `index.html` / `src/*.js` 内の Tailwind ユーティリティクラスを追加・変更した場合は、
     push 前に CSS を再生成する（初回のみ `npm install` が必要）:
     ```sh
