@@ -185,7 +185,7 @@ export const TARGET_IDS = ['name', 'id', 'cost', 'effect', 'json'];
 const BUILTIN_FILTER_DEFAULTS = {
   type: 'all', q: '', targets: TARGET_IDS.filter(t => t !== 'json'), lv: '',
   attrs: { list: [], dark: true }, tribes: [],
-  range: { dex: true, spawn: true, npc: false },
+  range: { dex: true, spawn: false, npc: false },
 };
 
 export let FILTER_DEFAULTS = (() => {
