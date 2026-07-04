@@ -172,7 +172,7 @@ const COLUMNS = {
     cell: (r) => '<td class="' + tdBase + ' text-center">' + fmtBonus(r) + '</td>',
   },
   effect: {
-    label: '特性/効果', defaultWidth: 300,
+    label: '特性/効果', defaultWidth: 445,
     header: () => '特性/効果',
     cell: (r) => {
       const eff = fmtEffect(r);
