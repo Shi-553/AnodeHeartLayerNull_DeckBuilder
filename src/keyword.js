@@ -74,8 +74,8 @@ function removeKwHistory(h) {
 // ==================== なんでもキーワード検索 ====================
 let _lastMouse = { x: 0, y: 0 };
 
-// マウス位置の要素から検索キーワードを抽出する(.filt/.kw/.cardref/属性・種族バッジ/名前/ID/属性エネルギー句)
-const KW_TOKEN_SELECTOR = '.filt, .kw, .cardref, .card-name, .card-id, [data-attr], [data-tribe], [data-kw], [data-detail-toggle]';
+// マウス位置の要素から検索キーワードを抽出する(.filt/.kw/.fusion-badge/.cardref/属性・種族バッジ/名前/ID/属性エネルギー句)
+const KW_TOKEN_SELECTOR = '.filt, .kw, .fusion-badge, .cardref, .card-name, .card-id, [data-attr], [data-tribe], [data-kw], [data-detail-toggle]';
 
 function keywordFromElement(el) {
   if (!el) return '';

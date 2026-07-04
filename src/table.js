@@ -88,16 +88,43 @@ function sep() {
   return '<span class="text-gray-600 select-none">/</span>';
 }
 
+function nameBadgeItems(r) {
+  const items = [];
+  if (r.from_fusion) {
+    items.push({ label: '合体', className: r.fusion_html ? 'fusion-badge kw' : 'fusion-badge', tip: r.fusion_html || '' });
+  }
+  if (!r.in_dex && r.is_glyph) {
+    items.push({ label: 'グリフ', className: 'fusion-badge', style: 'background:#7c3aed' });
+  }
+  if (!r.in_dex && r.is_shop) {
+    items.push({ label: 'ショップ', className: 'fusion-badge', style: 'background:#475569' });
+  }
+  if ((!r.in_dex && r.is_spawnable && !r.is_glyph) || (r.in_dex && r.has_spawn_sources)) {
+    items.push({ label: '生成', className: r.spawn_html ? 'fusion-badge kw' : 'fusion-badge', tip: r.spawn_html || '', style: 'background:#0e7490' });
+  }
+  if (!r.in_dex && (r.is_spawnable || r.from_fusion || r.is_glyph || r.is_shop)) {
+    items.push({ label: 'デッキ外', className: 'fusion-badge', style: 'background:#b45309' });
+  }
+  if (!r.in_dex && !r.is_spawnable && !r.from_fusion && !r.is_glyph && !r.is_shop) {
+    items.push({ label: 'NPC', className: 'fusion-badge', style: 'background:#6b7280' });
+  }
+  return items;
+}
+
+export function nameBadgeSearchText(r) {
+  const labels = nameBadgeItems(r).map(item => item.label);
+  const aliases = [];
+  if (labels.includes('NPC')) aliases.push('NPC限定');
+  if (labels.includes('デッキ外')) aliases.push('デッキ外入手');
+  return [...labels, ...aliases].join(' ');
+}
+
 function nameBadges(r) {
-  const fusionTip   = r.fusion_html ? ' class="fusion-badge kw" data-tip="' + esc(r.fusion_html) + '"' : ' class="fusion-badge"';
-  const fusionBadge = r.from_fusion ? ' <span' + fusionTip + '>合体</span>' : '';
-  const glyphBadge  = (!r.in_dex && r.is_glyph) ? ' <span class="fusion-badge" style="background:#7c3aed">グリフ</span>' : '';
-  const shopBadge   = (!r.in_dex && r.is_shop) ? ' <span class="fusion-badge" style="background:#475569">ショップ</span>' : '';
-  const spawnTip    = r.spawn_html ? ' class="fusion-badge kw" data-tip="' + esc(r.spawn_html) + '" style="background:#0e7490"' : ' class="fusion-badge" style="background:#0e7490"';
-  const spawnBadge  = ((!r.in_dex && r.is_spawnable && !r.is_glyph) || (r.in_dex && r.has_spawn_sources)) ? ' <span' + spawnTip + '>生成</span>' : '';
-  const noDeckBadge = (!r.in_dex && (r.is_spawnable || r.from_fusion || r.is_glyph || r.is_shop)) ? ' <span class="fusion-badge" style="background:#b45309">デッキ外</span>' : '';
-  const npcBadge    = (!r.in_dex && !r.is_spawnable && !r.from_fusion && !r.is_glyph && !r.is_shop) ? ' <span class="fusion-badge" style="background:#6b7280">NPC</span>' : '';
-  return fusionBadge + glyphBadge + shopBadge + spawnBadge + noDeckBadge + npcBadge;
+  return nameBadgeItems(r).map(item => {
+    const tipAttr = item.tip ? ' data-tip="' + esc(item.tip) + '"' : '';
+    const styleAttr = item.style ? ' style="' + item.style + '"' : '';
+    return ' <span class="' + item.className + '"' + tipAttr + styleAttr + '>' + highlight(item.label, state.lastQ, state.lastQRegex) + '</span>';
+  }).join('');
 }
 
 const COLUMNS = {

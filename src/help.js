@@ -29,7 +29,7 @@ const OPERATIONS = [
     ['カードを右クリック', '検索結果でフォーカス', '表示されていない場合は絞り込みを解除'],
   ] },
   { group: 'キーボード', items: [
-    ['F', 'マウス位置の語でキーワード検索', '属性 / 種族 / 名前など'],
+    ['F', 'マウス位置の語でキーワード検索', '属性 / 種族 / 名前 / バッヂ など'],
     ['Esc', 'モーダルを閉じる / 全フィルタを規定値に戻す'],
   ] },
 ];
@@ -58,11 +58,19 @@ function closeHelpModal(e) {
   document.getElementById('help-modal').classList.add('hidden');
 }
 
-// 入力欄にフォーカスがある時はキーボード操作を無効にする
+const TEXT_INPUT_TYPES = new Set(['', 'text', 'search', 'url', 'tel', 'email', 'password', 'number']);
+
+// テキスト入力中のみキーボード操作を無効にする(チェックボックスやボタンは対象外)
 function isTypingTarget(el) {
   if (!el) return false;
-  const tag = el.tagName;
-  return tag === 'INPUT' || tag === 'TEXTAREA' || el.isContentEditable;
+  const target = el.closest ? el.closest('input, textarea, [contenteditable], [contenteditable="true"]') : el;
+  if (!target) return false;
+  if (target.isContentEditable) return true;
+  const tag = target.tagName;
+  if (tag === 'TEXTAREA') return !target.readOnly && !target.disabled;
+  if (tag !== 'INPUT') return false;
+  const type = String(target.type || '').toLowerCase();
+  return TEXT_INPUT_TYPES.has(type) && !target.readOnly && !target.disabled;
 }
 
 // init() から呼ばれる、操作ヘルプ・グローバルキーボード操作関連のイベント登録。
@@ -73,17 +81,18 @@ export function wireHelpEvents() {
   $('help-modal').addEventListener('click', closeHelpModal);
 
   document.addEventListener('keydown', e => {
+    const focusEl = document.activeElement || e.target;
     if (e.key === 'Escape') {
       const helpModal = $('help-modal');
       const tama = $('tama-modal');
       if (helpModal && !helpModal.classList.contains('hidden')) { helpModal.classList.add('hidden'); return; }
       if (tama && !tama.classList.contains('hidden')) { closeTamaPicker(); return; }
       // 入力欄/編集中はフォーカスを外すだけ(意図しないリセットを防ぐ)
-      if (isTypingTarget(e.target)) { if (e.target.blur) e.target.blur(); return; }
+      if (isTypingTarget(focusEl)) { if (focusEl.blur) focusEl.blur(); return; }
       resetAllFilters();  // Escape で全フィルタをデフォルトに戻す
       return;
     }
-    if (isTypingTarget(e.target)) return;
+    if (isTypingTarget(focusEl)) return;
     if (e.key.toLowerCase() === 'f' && !e.ctrlKey && !e.metaKey && !e.altKey) {
       e.preventDefault();
       keywordSearchAtCursor();

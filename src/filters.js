@@ -2,7 +2,7 @@
 // 既定値(保存/戻す)管理。
 import { state } from './state.js';
 import { DARK_MAP, ATTR_COLORS, ALL_CARD_TYPES, TRIBE_EMOJI } from './constants.js';
-import { renderTable } from './table.js';
+import { renderTable, nameBadgeSearchText } from './table.js';
 import { deckToast } from './toast.js';
 import { stripHtml } from './utils.js';
 
@@ -142,6 +142,7 @@ export const SEARCH_FIELD_FN = {
   id:     e => e.name_en || '',
   cost:   e => stripHtml(e.cost_ja),
   effect: e => stripHtml(e.effect_ja) + stripHtml(e.flags_ja),
+  badge:  e => nameBadgeSearchText(e),
   json:   e => e.raw_json || '',
 };
 
@@ -200,7 +201,7 @@ export function doSearch() {
 // ==================== フィルタの既定値管理 ====================
 const FILTER_DEFAULTS_KEY = 'filter-defaults-v2';
 export const FILTER_SECTIONS = ['type', 'q', 'targets', 'lv', 'attrs', 'tribes', 'range'];
-export const TARGET_IDS = ['name', 'id', 'cost', 'effect', 'json'];
+export const TARGET_IDS = ['name', 'id', 'cost', 'effect', 'badge', 'json'];
 const BUILTIN_FILTER_DEFAULTS = {
   type: 'all', q: { text: '', regex: false }, targets: TARGET_IDS.filter(t => t !== 'json'), lv: '',
   attrs: { list: [], dark: true }, tribes: [],
@@ -331,6 +332,7 @@ export function wireFilterEvents() {
     b.addEventListener('click', () => saveSectionDefault(b.dataset.sec)));
   TYPES.forEach(t => $('btn-' + t).addEventListener('click', () => setType(t)));
   ['target-name', 'target-id', 'target-cost', 'target-effect', 'target-json',
+    'target-badge',
     'show-dex', 'show-spawn', 'show-npc', 'q-regex'].forEach(id =>
     $(id).addEventListener('change', doSearch));
   [['lv-all', ''], ['lv-0', '0'], ['lv-1', '1'], ['lv-2', '2'], ['lv-3', '3'], ['lv-4', '4']]
