@@ -327,9 +327,10 @@ function relaxFiltersFor(e) {
   if (state.currentLv && String(e.lv) !== state.currentLv) setLv('', true);
   if (state.selectedAttrs.size && !effectiveAttrs().has(e.attr)) { state.selectedAttrs.clear(); updateAttrHighlight(); }
   if (state.selectedTribes.size && !state.selectedTribes.has(e.class)) { state.selectedTribes.clear(); updateTribeHighlight(); }
-  const isNpc = !e.in_dex && !e.is_spawnable;
+  const isOutOfDeck = !e.in_dex && (e.is_spawnable || e.from_fusion || e.is_glyph);
+  const isNpc = !e.in_dex && !isOutOfDeck;
   if (e.in_dex && !document.getElementById('show-dex').checked) document.getElementById('show-dex').checked = true;
-  if (e.is_spawnable && !document.getElementById('show-spawn').checked) document.getElementById('show-spawn').checked = true;
+  if (isOutOfDeck && !document.getElementById('show-spawn').checked) document.getElementById('show-spawn').checked = true;
   if (isNpc && !document.getElementById('show-npc').checked) document.getElementById('show-npc').checked = true;
   const q = document.getElementById('q').value.trim();
   if (q) {

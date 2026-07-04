@@ -172,9 +172,10 @@ export function doSearch() {
       return false;
     }
     if (attrSet.size && !attrSet.has(e.attr)) return false;
-    const isNpc = !e.in_dex && !e.is_spawnable;
+    const isOutOfDeck = !e.in_dex && (e.is_spawnable || e.from_fusion || e.is_glyph);
+    const isNpc = !e.in_dex && !isOutOfDeck;
     if (!showDex && e.in_dex) return false;
-    if (!showSpawn && e.is_spawnable) return false;
+    if (!showSpawn && isOutOfDeck) return false;
     if (!showNpc && isNpc) return false;
     if (state.currentLv && String(e.lv) !== state.currentLv) return false;
     if (state.selectedTribes.size && !state.selectedTribes.has(e.class)) return false;
