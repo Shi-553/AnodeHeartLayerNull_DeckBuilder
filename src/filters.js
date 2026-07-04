@@ -172,7 +172,7 @@ export function doSearch() {
       return false;
     }
     if (attrSet.size && !attrSet.has(e.attr)) return false;
-    const isOutOfDeck = !e.in_dex && (e.is_spawnable || e.from_fusion || e.is_glyph);
+    const isOutOfDeck = !e.in_dex && (e.is_spawnable || e.from_fusion || e.is_glyph || e.is_shop);
     const isNpc = !e.in_dex && !isOutOfDeck;
     if (!showDex && e.in_dex) return false;
     if (!showSpawn && isOutOfDeck) return false;

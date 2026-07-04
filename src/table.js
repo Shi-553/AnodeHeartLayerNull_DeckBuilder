@@ -92,11 +92,12 @@ function nameBadges(r) {
   const fusionTip   = r.fusion_html ? ' class="fusion-badge kw" data-tip="' + esc(r.fusion_html) + '"' : ' class="fusion-badge"';
   const fusionBadge = r.from_fusion ? ' <span' + fusionTip + '>合体</span>' : '';
   const glyphBadge  = (!r.in_dex && r.is_glyph) ? ' <span class="fusion-badge" style="background:#7c3aed">グリフ</span>' : '';
+  const shopBadge   = (!r.in_dex && r.is_shop) ? ' <span class="fusion-badge" style="background:#475569">ショップ</span>' : '';
   const spawnTip    = r.spawn_html ? ' class="fusion-badge kw" data-tip="' + esc(r.spawn_html) + '" style="background:#0e7490"' : ' class="fusion-badge" style="background:#0e7490"';
   const spawnBadge  = ((!r.in_dex && r.is_spawnable && !r.is_glyph) || (r.in_dex && r.has_spawn_sources)) ? ' <span' + spawnTip + '>生成</span>' : '';
-  const noDeckBadge = (!r.in_dex && (r.is_spawnable || r.from_fusion || r.is_glyph)) ? ' <span class="fusion-badge" style="background:#b45309">デッキ外</span>' : '';
-  const npcBadge    = (!r.in_dex && !r.is_spawnable && !r.from_fusion && !r.is_glyph) ? ' <span class="fusion-badge" style="background:#6b7280">NPC</span>' : '';
-  return fusionBadge + glyphBadge + spawnBadge + noDeckBadge + npcBadge;
+  const noDeckBadge = (!r.in_dex && (r.is_spawnable || r.from_fusion || r.is_glyph || r.is_shop)) ? ' <span class="fusion-badge" style="background:#b45309">デッキ外</span>' : '';
+  const npcBadge    = (!r.in_dex && !r.is_spawnable && !r.from_fusion && !r.is_glyph && !r.is_shop) ? ' <span class="fusion-badge" style="background:#6b7280">NPC</span>' : '';
+  return fusionBadge + glyphBadge + shopBadge + spawnBadge + noDeckBadge + npcBadge;
 }
 
 const COLUMNS = {

@@ -16,12 +16,13 @@ export function cardPreviewHtml(r) {
   const fusionTip   = r.fusion_html ? ' class="fusion-badge kw" data-tip="' + esc(r.fusion_html) + '"' : ' class="fusion-badge"';
   const fusionBadge = r.from_fusion ? ' <span' + fusionTip + '>合体</span>' : '';
   const glyphBadge  = (!r.in_dex && r.is_glyph) ? ' <span class="fusion-badge" style="background:#7c3aed">グリフ</span>' : '';
+  const shopBadge   = (!r.in_dex && r.is_shop) ? ' <span class="fusion-badge" style="background:#475569">ショップ</span>' : '';
   const spawnTip    = r.spawn_html ? ' class="fusion-badge kw" data-tip="' + esc(r.spawn_html) + '" style="background:#0e7490"' : ' class="fusion-badge" style="background:#0e7490"';
   const spawnBadge  = ((!r.in_dex && r.is_spawnable && !r.is_glyph) || (r.in_dex && r.has_spawn_sources))
     ? ' <span' + spawnTip + '>生成</span>' : '';
 
   const thumbBorder = state.ELEMENT_COLOR[r.attr] || '#4b5563';
-  let info = '<div class="preview-name"><span class="card-name">' + esc(r.name) + '</span>' + fusionBadge + glyphBadge + spawnBadge + '</div>' +
+  let info = '<div class="preview-name"><span class="card-name">' + esc(r.name) + '</span>' + fusionBadge + glyphBadge + shopBadge + spawnBadge + '</div>' +
     '<div class="preview-id">' + esc(r.name_en) + '</div>' +
     '<div class="preview-meta">' + attrSpan + (tribeSpan ? ' / ' + tribeSpan : '') + ' ・ ' + typeSpan + '</div>';
 
