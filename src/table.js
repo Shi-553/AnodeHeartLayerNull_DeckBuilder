@@ -147,15 +147,15 @@ const COLUMNS = {
       const depth = ctx.depth || 0;
       const connectMark = depth > 0 ? '<span class="text-indigo-400 mr-1" title="参照元カードから展開">↳</span>' : '';
       return '<td class="' + tdBase + '">' +
-        '<div class="font-semibold text-gray-100">' + connectMark + '<span class="card-name">' + highlight(r.name, state.lastQ) + '</span>' + nameBadges(r) + '</div>' +
-        '<div class="text-gray-500 text-xs cursor-pointer hover:underline w-fit" data-detail-toggle="' + ctx.detailId + '" title="クリックでJSON表示">' + highlight(r.name_en, state.lastQ) + '</div>' +
+        '<div class="font-semibold text-gray-100">' + connectMark + '<span class="card-name">' + highlight(r.name, state.lastQ, state.lastQRegex) + '</span>' + nameBadges(r) + '</div>' +
+        '<div class="text-gray-500 text-xs cursor-pointer hover:underline w-fit" data-detail-toggle="' + ctx.detailId + '" title="クリックでJSON表示">' + highlight(r.name_en, state.lastQ, state.lastQRegex) + '</div>' +
         '</td>';
     },
   },
   cost: {
     label: 'コスト', defaultWidth: 132, sortKey: 'cost',
     header: () => 'コスト',
-    cell: (r) => '<td class="' + tdBase + ' break-all">' + highlightHtml(fmtCost(r), state.lastQ) + '</td>',
+    cell: (r) => '<td class="' + tdBase + ' break-all">' + highlightHtml(fmtCost(r), state.lastQ, state.lastQRegex) + '</td>',
   },
   hpBp: {
     label: 'HP/BP', defaultWidth: 40, align: 'text-center',
@@ -178,8 +178,8 @@ const COLUMNS = {
       const eff = fmtEffect(r);
       const flagsHtml = fmtFlags(r);
       const inner = (flagsHtml && eff)
-        ? '<div class="effect-text">' + highlightHtml(eff, state.lastQ) + '</div><div class="effect-text" style="margin-top:4px;border-top:1px solid #374151;padding-top:4px">' + highlightHtml(flagsHtml, state.lastQ) + '</div>'
-        : '<div class="effect-text">' + highlightHtml(flagsHtml || eff, state.lastQ) + '</div>';
+        ? '<div class="effect-text">' + highlightHtml(eff, state.lastQ, state.lastQRegex) + '</div><div class="effect-text" style="margin-top:4px;border-top:1px solid #374151;padding-top:4px">' + highlightHtml(flagsHtml, state.lastQ, state.lastQRegex) + '</div>'
+        : '<div class="effect-text">' + highlightHtml(flagsHtml || eff, state.lastQ, state.lastQRegex) + '</div>';
       return '<td class="' + tdBase + ' effect-cell text-gray-300">' + inner + '</td>';
     },
   },
@@ -199,7 +199,7 @@ export function buildRowHtml(r, opts) {
   const rowStyle = depth > 0 ? ' style="background:rgba(99,102,241,0.07)"' : '';
   return (
     '<tr class="' + rowBg + '" data-depth="' + depth + '" data-card-id="' + esc(r.name_en) + '" data-addable="' + (r.in_dex ? '1' : '0') + '"' + rowStyle + '>' + cols + '</tr>' +
-    '<tr id="' + opts.detailId + '" class="json-detail bg-gray-950" style="display:none"><td colspan="' + order.length + '" class="px-4 py-2 border-b border-gray-700"><pre>' + highlight(rawJson, state.lastQ) + '</pre></td></tr>'
+    '<tr id="' + opts.detailId + '" class="json-detail bg-gray-950" style="display:none"><td colspan="' + order.length + '" class="px-4 py-2 border-b border-gray-700"><pre>' + highlight(rawJson, state.lastQ, state.lastQRegex) + '</pre></td></tr>'
   );
 }
 

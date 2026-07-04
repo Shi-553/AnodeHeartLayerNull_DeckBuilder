@@ -24,6 +24,7 @@ export const state = {
   sortDir: 1,
   lastRows: [],
   lastQ: '',
+  lastQRegex: false,
 };
 
 export function buildCardIndex() {

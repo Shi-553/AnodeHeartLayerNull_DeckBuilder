@@ -148,12 +148,22 @@ export const SEARCH_FIELD_FN = {
 // scripts/site_data.py の search_cards() と同一のフィルタ条件をクライアントで実行する。
 export function doSearch() {
   const q = document.getElementById('q').value.trim();
+  const qRegex = document.getElementById('q-regex').checked;
   const showDex   = document.getElementById('show-dex').checked;
   const showSpawn = document.getElementById('show-spawn').checked;
   const showNpc   = document.getElementById('show-npc').checked;
   const targets = TARGET_IDS.filter(t => document.getElementById('target-' + t).checked);
   const attrSet = effectiveAttrs();
   const qLower = q.toLowerCase();
+  let qRe = null;
+  let regexError = false;
+  if (q && qRegex) {
+    try {
+      qRe = new RegExp(q, 'i');
+    } catch (e) {
+      regexError = true;
+    }
+  }
 
   const results = state.ALL_CARDS.filter(e => {
     if (state.currentType === 'all') {
@@ -168,22 +178,30 @@ export function doSearch() {
     if (!showNpc && isNpc) return false;
     if (state.currentLv && String(e.lv) !== state.currentLv) return false;
     if (state.selectedTribes.size && !state.selectedTribes.has(e.class)) return false;
-    if (q && !targets.some(t => SEARCH_FIELD_FN[t] && SEARCH_FIELD_FN[t](e).toLowerCase().includes(qLower))) return false;
+    if (q) {
+      if (regexError) return false;
+      if (qRe) {
+        if (!targets.some(t => SEARCH_FIELD_FN[t] && qRe.test(SEARCH_FIELD_FN[t](e)))) return false;
+      } else {
+        if (!targets.some(t => SEARCH_FIELD_FN[t] && SEARCH_FIELD_FN[t](e).toLowerCase().includes(qLower))) return false;
+      }
+    }
     return true;
   });
 
   state.lastQ = q;
-  document.getElementById('count-badge').textContent = results.length + ' 件';
+  state.lastQRegex = !!(q && qRegex && !regexError);
+  document.getElementById('count-badge').textContent = results.length + ' 件' + (regexError ? ' (正規表現エラー)' : '');
   renderTable(results);
   updateFilterResetButtons();
 }
 
 // ==================== フィルタの既定値管理 ====================
-const FILTER_DEFAULTS_KEY = 'filter-defaults-v1';
+const FILTER_DEFAULTS_KEY = 'filter-defaults-v2';
 export const FILTER_SECTIONS = ['type', 'q', 'targets', 'lv', 'attrs', 'tribes', 'range'];
 export const TARGET_IDS = ['name', 'id', 'cost', 'effect', 'json'];
 const BUILTIN_FILTER_DEFAULTS = {
-  type: 'all', q: '', targets: TARGET_IDS.filter(t => t !== 'json'), lv: '',
+  type: 'all', q: { text: '', regex: false }, targets: TARGET_IDS.filter(t => t !== 'json'), lv: '',
   attrs: { list: [], dark: true }, tribes: [],
   range: { dex: true, spawn: false, npc: false },
 };
@@ -201,7 +219,10 @@ function _normVal(v) {
 function readSection(sec) {
   switch (sec) {
     case 'type': return state.currentType;
-    case 'q': return document.getElementById('q').value;
+    case 'q': return {
+      text: document.getElementById('q').value,
+      regex: document.getElementById('q-regex').checked,
+    };
     case 'targets': return TARGET_IDS.filter(t => document.getElementById('target-' + t).checked);
     case 'lv': return state.currentLv;
     case 'attrs': return { list: [...state.selectedAttrs], dark: document.getElementById('include-dark').checked };
@@ -219,7 +240,8 @@ function applySection(sec, value, silent) {
   switch (sec) {
     case 'type': setType(value, true); break;
     case 'q':
-      document.getElementById('q').value = value;
+      document.getElementById('q').value = value.text || '';
+      document.getElementById('q-regex').checked = !!value.regex;
       break;
     case 'targets':
       TARGET_IDS.forEach(t => { document.getElementById('target-' + t).checked = value.includes(t); });
@@ -308,7 +330,7 @@ export function wireFilterEvents() {
     b.addEventListener('click', () => saveSectionDefault(b.dataset.sec)));
   TYPES.forEach(t => $('btn-' + t).addEventListener('click', () => setType(t)));
   ['target-name', 'target-id', 'target-cost', 'target-effect', 'target-json',
-   'show-dex', 'show-spawn', 'show-npc'].forEach(id =>
+    'show-dex', 'show-spawn', 'show-npc', 'q-regex'].forEach(id =>
     $(id).addEventListener('change', doSearch));
   [['lv-all', ''], ['lv-0', '0'], ['lv-1', '1'], ['lv-2', '2'], ['lv-3', '3'], ['lv-4', '4']]
     .forEach(([id, v]) => $(id).addEventListener('click', () => setLv(v)));
