@@ -94,25 +94,32 @@ export function wireGridPopup() {
   document.body.appendChild(popup);
 
   function positionPopup(cardRect) {
+    const zoom = Number.parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+    const card = {
+      left: cardRect.left / zoom,
+      right: cardRect.right / zoom,
+      top: cardRect.top / zoom,
+      bottom: cardRect.bottom / zoom,
+    };
     const w = popup.offsetWidth;
     const h = popup.offsetHeight;
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
+    const vw = document.documentElement.clientWidth || window.innerWidth;
+    const vh = document.documentElement.clientHeight || window.innerHeight;
 
-    let left = cardRect.left;
+    let left = card.left;
     if (left + w > vw - 8) left = vw - w - 8;
     if (left < 8) left = 8;
 
     // 上下はスペースの広い方に出す。テキストが収まるかは考慮しない。
     // 収まるかで判定すると参照先追加で高さが変わったとき上下が切り替わるため。
-    const spaceBelow = vh - cardRect.bottom - 8;
-    const spaceAbove = cardRect.top - 8;
+    const spaceBelow = vh - card.bottom - 8;
+    const spaceAbove = card.top - 8;
     let top;
     if (spaceBelow >= spaceAbove) {
-      top = cardRect.bottom + 4;
+      top = card.bottom + 4;
       if (top + h > vh - 8) top = vh - h - 8;
     } else {
-      top = cardRect.top - h - 4;
+      top = card.top - h - 4;
       if (top < 8) top = 8;
     }
 

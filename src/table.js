@@ -347,8 +347,6 @@ function wireColumnHandles(wrap) {
   let dragKey = null;
   let dropInfo = null; // { key, after }
   const AFTER_THRESHOLD = 0.5; // 列幅に対する比率。中央固定、全列で統一。
-  const pageZoom = () => Number.parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
-  const toCssX = clientX => clientX / pageZoom();
   const clearDrop = () => wrap.querySelectorAll('th.drop-before, th.drop-after')
     .forEach(t => t.classList.remove('drop-before', 'drop-after'));
   const showDrop = (th, after) => { clearDrop(); th.classList.add(after ? 'drop-after' : 'drop-before'); };
@@ -358,8 +356,7 @@ function wireColumnHandles(wrap) {
   // 「直後の列を素通りしないと反応しない」ように見えるバグになるため。
   const updateDrop = (th, clientX) => {
     const r = th.getBoundingClientRect();
-    const pointerCssX = toCssX(clientX);
-    const after = (pointerCssX - r.left) > r.width * AFTER_THRESHOLD;
+    const after = (clientX - r.left) > r.width * AFTER_THRESHOLD;
     showDrop(th, after);
     dropInfo = { key: th.dataset.col, after };
   };
@@ -416,13 +413,13 @@ function wireColumnHandles(wrap) {
       wrap.classList.add('resizing-col');
       if (th) th.classList.add('col-resize-active');
       document.body.style.cursor = 'col-resize';
+      const startX = e.clientX;
+      const startWidth = Number.parseFloat(colEl.style.width) || colEl.getBoundingClientRect().width || 0;
+      const visualWidth = th ? th.getBoundingClientRect().width : colEl.getBoundingClientRect().width;
+      const pxPerCss = (startWidth > 0 && visualWidth > 0) ? (visualWidth / startWidth) : 1;
       const onMove = ev => {
-        // html zoom 適用時は、マウス座標(clientX)と getBoundingClientRect() が
-        // 異なる座標系になるため、clientX を CSS座標へ正規化してから計算する。
-        const zoom = Number.parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
-        const pointerCssX = ev.clientX / zoom;
-        const left = colEl.getBoundingClientRect().left;
-        const w = Math.max(20, Math.round(pointerCssX - left));
+        const dx = ev.clientX - startX;
+        const w = Math.max(20, Math.round(startWidth + ((dx * 2) / pxPerCss)));
         colEl.style.width = w + 'px';
         layout.columnWidths[key] = w;
         if (tbl) {

@@ -62,11 +62,19 @@ export function initTooltip() {
     tooltipEl.style.left = '-9999px';
     tooltipEl.style.top  = '-9999px';
     tooltipEl.style.display = 'block';
-    const r  = kwEl.getBoundingClientRect();
+    const zoom = Number.parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+    const rr = kwEl.getBoundingClientRect();
+    const r = {
+      left: rr.left / zoom,
+      right: rr.right / zoom,
+      top: rr.top / zoom,
+      bottom: rr.bottom / zoom,
+    };
     const tw = tooltipEl.offsetWidth;
     const th = tooltipEl.offsetHeight;
+    const vw = document.documentElement.clientWidth || window.innerWidth;
     let x = r.left;
-    if (x + tw > window.innerWidth - 8) x = window.innerWidth - tw - 8;
+    if (x + tw > vw - 8) x = vw - tw - 8;
     x = Math.max(4, x);
     const above = (r.top >= th + 12);
     const y = above ? r.top - th - 6 : r.bottom + 6;

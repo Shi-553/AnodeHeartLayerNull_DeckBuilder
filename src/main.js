@@ -37,13 +37,17 @@ function updateCenterPaneWidth() {
   const mainPane = document.getElementById('main-pane');
   if (!mainPane) return;
 
+  // html に zoom がかかっているため、getBoundingClientRect() は zoom 後(見た目)のpxを返す。
+  // mainPane.style.width にそのまま渡すと zoom 前提として二重にスケールされてしまうので、
+  // 列リサイズ処理(table.js)と同じく zoom で割って CSS px に正規化してから使う。
+  const zoom = Number.parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
   const mainPaneStyle = getComputedStyle(mainPane);
   const panePaddingX = (Number.parseFloat(mainPaneStyle.paddingLeft) || 0)
     + (Number.parseFloat(mainPaneStyle.paddingRight) || 0);
   const deckPane = document.getElementById('deck-pane');
   const sidePane = document.querySelector('aside');
-  const deckW = deckPane ? Math.ceil(deckPane.getBoundingClientRect().width) : 0;
-  const sideW = sidePane ? Math.ceil(sidePane.getBoundingClientRect().width) : 0;
+  const deckW = deckPane ? Math.ceil(deckPane.getBoundingClientRect().width / zoom) : 0;
+  const sideW = sidePane ? Math.ceil(sidePane.getBoundingClientRect().width / zoom) : 0;
   const viewportW = document.documentElement.clientWidth || window.innerWidth;
   const maxMain = Math.max(420, Math.floor(viewportW - deckW - sideW));
 
@@ -52,7 +56,7 @@ function updateCenterPaneWidth() {
     const wrapEl = document.getElementById('table-wrap');
     const scrollGutter = wrapEl ? Math.max(0, wrapEl.offsetWidth - wrapEl.clientWidth) : 0;
     const tableW = tableEl
-      ? Math.ceil(tableEl.getBoundingClientRect().width)
+      ? Math.ceil(tableEl.getBoundingClientRect().width / zoom)
       : getActiveTableWidth();
     const desired = Math.max(520, Math.round(tableW + panePaddingX + scrollGutter));
     mainPane.style.width = Math.min(desired, maxMain) + 'px';
