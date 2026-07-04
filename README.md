@@ -4,6 +4,8 @@
 HTML / CSS / JavaScript のみで動作。
 自分用。AIに作らせた。
 
+ページ：https://shi-553.github.io/AnodeHeartLayerNull_DeckBuilder/
+
 ## 構成
 
 | パス | 種別 | 内容 |
