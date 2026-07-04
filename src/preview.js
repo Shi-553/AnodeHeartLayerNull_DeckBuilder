@@ -50,6 +50,23 @@ export function cardPreviewHtml(r) {
 }
 
 let _previewId = null;
+let _previewRefWired = false;
+
+function togglePreviewRef(panel, cardId) {
+  const existing = panel.querySelector('.preview-ref-card[data-ref-id="' + CSS.escape(cardId) + '"]');
+  if (existing) {
+    existing.remove();
+    return;
+  }
+  const card = state.CARD_INDEX[cardId];
+  if (!card) return;
+  const refDiv = document.createElement('div');
+  refDiv.className = 'preview-ref-card grid-ref-card';
+  refDiv.dataset.refId = cardId;
+  refDiv.innerHTML = cardPreviewHtml(card);
+  panel.appendChild(refDiv);
+  panel.scrollTop = panel.scrollHeight;
+}
 
 export function setPreview(id) {
   const panel = document.getElementById('card-preview');
@@ -81,6 +98,30 @@ export function setPreview(id) {
 }
 
 export function wirePreviewHover() {
+  if (!_previewRefWired) {
+    _previewRefWired = true;
+
+    document.getElementById('card-preview').addEventListener('click', e => {
+      const ref = e.target.closest('.cardref');
+      if (!ref || !ref.dataset.cardId) return;
+      e.preventDefault();
+      e.stopPropagation();
+      togglePreviewRef(e.currentTarget, ref.dataset.cardId);
+    });
+
+    document.addEventListener('click', e => {
+      if (!_previewId) return;
+      if (!e.target.closest('#kw-tooltip, #kw-tooltip-sub')) return;
+      const ref = e.target.closest('.cardref');
+      if (!ref || !ref.dataset.cardId) return;
+      const mainTip = document.getElementById('kw-tooltip');
+      if (mainTip && mainTip._sourceRow) return;
+      const panel = document.getElementById('card-preview');
+      if (!panel) return;
+      togglePreviewRef(panel, ref.dataset.cardId);
+    });
+  }
+
   document.addEventListener('mouseover', e => {
     const el = e.target.closest('#table-wrap [data-card-id], #deck-grid [data-card-id]');
     if (el) setPreview(el.dataset.cardId);
