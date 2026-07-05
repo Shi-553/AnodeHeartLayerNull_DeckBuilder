@@ -4,20 +4,19 @@ import { state } from './state.js';
 import { DARK_MAP, ATTR_COLORS, ALL_CARD_TYPES, TRIBE_EMOJI } from './constants.js';
 import { renderTable, nameBadgeSearchText } from './table.js';
 import { deckToast } from './toast.js';
-import { stripHtml } from './utils.js';
+import { stripHtml, cancelDebounce } from './utils.js';
 
 export const TYPES = ['all', 'tama', 'appli', 'virus', 'patch'];
 
 export function setType(t, silent) {
   state.currentType = t;
-  if (t !== 'tama') { state.currentLv = ''; }
   const active   = 'py-1 rounded text-xs font-bold transition bg-indigo-600 text-white';
   const inactive = 'py-1 rounded text-xs font-bold transition bg-gray-600 text-gray-300';
   TYPES.forEach(k => {
     document.getElementById('btn-' + k).className = k === t ? active : inactive;
   });
   document.getElementById('lv-section').style.display = t === 'tama' ? '' : 'none';
-  if (!silent) doSearch();
+  if (!silent) { cancelDebounce(); doSearch(); }
 }
 
 export function setLv(v, silent) {
@@ -28,7 +27,7 @@ export function setLv(v, silent) {
   keys.forEach(k => {
     document.getElementById('lv-' + k).className = (k === 'all' ? '' : k) === v ? active : inactive;
   });
-  if (!silent) doSearch();
+  if (!silent) { cancelDebounce(); doSearch(); }
 }
 
 function makeAttrCell(a) {
@@ -92,6 +91,7 @@ export function onAttrClick(a, e) {
     else state.selectedAttrs.add(a);
   }
   updateAttrHighlight();
+  cancelDebounce();
   doSearch();
 }
 
@@ -125,6 +125,7 @@ export function onTribeClick(t, e) {
     else state.selectedTribes.add(t);
   }
   updateTribeHighlight();
+  cancelDebounce();
   doSearch();
 }
 
@@ -178,7 +179,7 @@ export function doSearch() {
     if (!showDex && e.in_dex) return false;
     if (!showSpawn && isOutOfDeck) return false;
     if (!showNpc && isNpc) return false;
-    if (state.currentLv && String(e.lv) !== state.currentLv) return false;
+    if (state.currentType === 'tama' && state.currentLv && String(e.lv) !== state.currentLv) return false;
     if (state.selectedTribes.size && !state.selectedTribes.has(e.class)) return false;
     if (q) {
       if (regexError) return false;
@@ -264,7 +265,7 @@ function applySection(sec, value, silent) {
       document.getElementById('show-npc').checked = value.npc;
       break;
   }
-  if (!silent) doSearch();
+  if (!silent) { cancelDebounce(); doSearch(); }
 }
 
 function sectionIsDefault(sec) {
@@ -277,6 +278,7 @@ export function resetSection(sec) {
 
 export function resetAllFilters() {
   FILTER_SECTIONS.forEach(sec => applySection(sec, structuredClone(FILTER_DEFAULTS[sec]), true));
+  cancelDebounce();
   doSearch();
 }
 
@@ -337,7 +339,7 @@ export function wireFilterEvents() {
     $(id).addEventListener('change', doSearch));
   [['lv-all', ''], ['lv-0', '0'], ['lv-1', '1'], ['lv-2', '2'], ['lv-3', '3'], ['lv-4', '4']]
     .forEach(([id, v]) => $(id).addEventListener('click', () => setLv(v)));
-  $('include-dark').addEventListener('change', () => { updateAttrHighlight(); doSearch(); });
+  $('include-dark').addEventListener('change', () => { updateAttrHighlight(); cancelDebounce(); doSearch(); });
   // 動的生成HTML(検索結果テーブル/効果テキスト/デッキ詳細ポップアップ)内の
   // 属性/種族クリックをイベント委譲でまとめて処理する。
   document.addEventListener('click', e => {

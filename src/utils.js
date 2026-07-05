@@ -117,5 +117,13 @@ export function stripHtml(s) { return String(s || '').replace(/<[^>]+>/g, ''); }
 let debTimer = null;
 export function debounce(fn, ms = 250) {
   clearTimeout(debTimer);
-  debTimer = setTimeout(fn, ms);
+  debTimer = setTimeout(() => {
+    debTimer = null;
+    fn();
+  }, ms);
+}
+
+export function cancelDebounce() {
+  clearTimeout(debTimer);
+  debTimer = null;
 }

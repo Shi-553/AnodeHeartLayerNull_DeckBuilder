@@ -1,5 +1,5 @@
 // キーワード入力欄の履歴管理と、マウス位置の語からのキーワード検索("F"キー)。
-import { debounce } from './utils.js';
+import { debounce, cancelDebounce } from './utils.js';
 import { doSearch } from './filters.js';
 import { state } from './state.js';
 
@@ -61,6 +61,7 @@ function applyKwHistory(v) {
   input.value = v;
   hideKwHistory();
   commitKwHistory();
+  cancelDebounce();
   doSearch();
 }
 
@@ -107,6 +108,7 @@ function keywordFromElement(el) {
 function searchKeyword(kw) {
   const input = document.getElementById('q');
   input.value = kw;
+  cancelDebounce();
   doSearch();
   commitKwHistory();  // 入力欄をフォーカスしないため、blurに頼らず明示的に履歴へ反映する
 }

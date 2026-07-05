@@ -1,7 +1,7 @@
 // エントリーポイント。データ読み込み・初期化と、各モジュールに渡せない
 // 横断的なグローバルクリック委譲(タイプ切替/JSON詳細トグル/ソート)のみを担う。
 import { state, buildCardIndex } from './state.js';
-import { onHeaderClick, toggleDetail, renderTable } from './table.js';
+import { onHeaderClick, toggleDetail } from './table.js';
 import { setType, buildAttrList, buildTribeList, doSearch, applyInitialFilterDefaults, wireFilterEvents } from './filters.js';
 import { wireKeywordEvents } from './keyword.js';
 import { loadDeck, renderDeck, applyDeckPaneState, wireDeckEvents } from './deck.js';
@@ -11,6 +11,7 @@ import { wirePreviewHover, setPreview, wireGridPopup } from './preview.js';
 import { deckToast } from './toast.js';
 import { layout, saveLayoutDefault, resetLayout, updateLayoutResetButton } from './layout.js';
 import { getActiveTableWidth } from './table.js';
+import { cancelDebounce } from './utils.js';
 
 window.scrollTo(0, 0);
 window.addEventListener('load', () => window.scrollTo(0, 0), { once: true });
@@ -95,7 +96,10 @@ function wireGridSettingsControls() {
     colsInput.value = String(v);
     updateCenterPaneWidth();
     updateLayoutResetButton();
-    if (layout.viewMode === 'grid') renderTable(state.lastRows);
+    if (layout.viewMode === 'grid') {
+      cancelDebounce();
+      doSearch();
+    }
   });
 
   sizeInput.addEventListener('input', () => {
@@ -104,7 +108,10 @@ function wireGridSettingsControls() {
     sizeInput.value = String(v);
     updateCenterPaneWidth();
     updateLayoutResetButton();
-    if (layout.viewMode === 'grid') renderTable(state.lastRows);
+    if (layout.viewMode === 'grid') {
+      cancelDebounce();
+      doSearch();
+    }
   });
 
   updateGridSettingsUI();
@@ -125,14 +132,16 @@ function wireLayoutControls() {
     updateLayoutResetButton();
     updateViewToggleLabel();
     updateGridSettingsUI();
-    renderTable(state.lastRows);
+    cancelDebounce();
+    doSearch();
   });
   document.getElementById('view-toggle').addEventListener('click', () => {
     layout.viewMode = layout.viewMode === 'grid' ? 'list' : 'grid';
     updateViewToggleLabel();
     updateGridSettingsUI();
     updateLayoutResetButton();
-    renderTable(state.lastRows);
+    cancelDebounce();
+    doSearch();
     updateGridSettingsUI();
   });
   updateViewToggleLabel();
